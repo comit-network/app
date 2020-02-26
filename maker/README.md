@@ -1,4 +1,15 @@
-# Services Folder
+# Maker
+
+This is a Node.js (Fastify) application that acts as a COMIT swap counterparty.
+
+## Setup
+
+```
+yarn
+yarn dev
+```
+
+## Services Folder
 
 Services define routes within your application. Fastify provides an
 easy path to a microservice architecture, in the future you might want

@@ -4,14 +4,13 @@ import routes from '../constants/routes.json';
 import styles from './Home.css';
 
 export default function Home() {
-  const [rate, setRate] = useState('TODO');
+  const [rate, setRate] = useState('Loading...');
 
   useEffect(() => {
     async function fetchRate() {
-      const res = await fetch('http://localhost:3000/example');
-      const text = await res.text();
-      // console.log(text);
-      setRate(text);
+      const res = await fetch('http://localhost:3000/rates');
+      const { rates } = await res.json();
+      setRate(rates.dai.btc);
     }
     fetchRate();
   }, []);
@@ -19,10 +18,7 @@ export default function Home() {
   return (
     <div className={styles.container} data-tid="container">
       <h2>Home</h2>
-      <p>
-        Rate:
-        {rate}
-      </p>
+      <p>Rate: 1 Dai = {rate} BTC</p>
 
       <Link to={routes.COUNTER}>to Counter</Link>
     </div>
