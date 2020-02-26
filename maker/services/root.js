@@ -1,6 +1,18 @@
 'use strict'
 
 module.exports = function (fastify, opts, next) {
+  fastify.register(require('fastify-cors'), {
+    // put your options here
+    origin: (origin, cb) => {
+      if(/localhost/.test(origin)){
+        //  Request from localhost will pass
+        cb(null, true)
+        return
+      }
+      cb(new Error("Not allowed"), false)
+    }
+  })
+
   fastify.get('/', function (request, reply) {
     reply.send({ root: true })
   })
