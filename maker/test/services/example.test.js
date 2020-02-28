@@ -7,6 +7,7 @@ test('example is loaded', (t) => {
   t.plan(2)
   const app = build(t)
 
+  // TODO: fix test for /rates
   app.inject({
     url: '/example'
   }, (err, res) => {
