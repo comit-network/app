@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Form,
-  Input,
+  Pill,
   Field,
   Button,
   Text,
   Flex,
   Card,
-  Heading
+  Heading,
+  Input
 } from 'rimble-ui';
 
 type Props = {
@@ -20,10 +21,6 @@ export default function SwapForm(props: Props) {
   const [formValidated, setFormValidated] = useState(false);
   const [BTCValue, setBTCValue] = useState(0);
   const [DAIValue, setDAIValue] = useState(0);
-
-  const validateInput = e => {
-    e.target.parentNode.classList.add('was-validated');
-  };
 
   const convertToDAI = btc => {
     return btc * (1 / rate);
@@ -38,7 +35,6 @@ export default function SwapForm(props: Props) {
 
     setBTCValue(btc);
     setDAIValue(convertToDAI(btc));
-    validateInput(e); // TODO: toggle validation display with field-specific validation functions
   };
 
   const handleDAIChange = e => {
@@ -46,7 +42,6 @@ export default function SwapForm(props: Props) {
 
     setDAIValue(dai);
     setBTCValue(convertToBTC(dai));
-    validateInput(e);
   };
 
   const validateForm = () => {
@@ -66,9 +61,10 @@ export default function SwapForm(props: Props) {
     e.preventDefault();
     const swap = {
       BTCValue,
-      DAIValue
+      DAIValue,
+      rate
     };
-    console.log(swap);
+    console.log(swap); // prettier-ignore
   };
 
   return (
@@ -80,20 +76,19 @@ export default function SwapForm(props: Props) {
               <Field label="BTC to send" width={1}>
                 <Input
                   type="number"
-                  required // set required attribute to use brower's HTML5 input validation
+                  required
                   onChange={onBTCChange}
                   value={BTCValue}
                   width={1}
-                  placeholder="0.2345"
                   step="0.1"
                 />
               </Field>
             </Box>
             <Box width={[1, 1, 1 / 2]} px={3}>
               <Field label="DAI to receive" width={1}>
-                <Form.Input
+                <Input
                   type="number"
-                  required // set required attribute to use brower's HTML5 input validation
+                  required
                   onChange={handleDAIChange}
                   value={DAIValue}
                   width={1}
@@ -101,13 +96,17 @@ export default function SwapForm(props: Props) {
               </Field>
             </Box>
           </Flex>
-          <Text>Rate: 1 BTC = {(1 / rate).toFixed(4)} DAI</Text>
-          <Box>
-            {/* Use the validated state to update UI */}
-            <Button type="submit" disabled={!formValidated}>
-              Swap
-            </Button>
-          </Box>
+          <Pill style={{ margin: '10px 0px' }}>
+            Rate: 1 BTC = {(1 / rate).toFixed(4)} DAI
+          </Pill>
+          <Button
+            style={{ width: '100%' }}
+            type="submit"
+            disabled={!formValidated}
+            icon="SwapHoriz"
+          >
+            Swap
+          </Button>
         </Form>
       </Box>
       <Card my={4}>
