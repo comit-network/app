@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Card, Button, Heading, Text } from 'rimble-ui';
+import SwapForm from './SwapForm';
 
 export default function HomePage() {
   const [rate, setRate] = useState('Loading...');
@@ -14,10 +16,11 @@ export default function HomePage() {
 
   return (
     <div data-tid="container">
-      <h2>Home</h2>
-      <p>Rate: 1 BTC = {(1 / rate).toFixed(2)} DAI</p>
+      <Card>
+        <Heading>Swap BTC - DAI</Heading>
 
-      {/* <Link to="/counter">to Counter</Link> */}
+        <SwapForm rate={rate} />
+      </Card>
     </div>
   );
 }
