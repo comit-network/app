@@ -31,14 +31,14 @@ export default function SwapForm(props: Props) {
   };
 
   const onBTCChange = e => {
-    const btc = e.target.value;
+    const btc = parseFloat(e.target.value);
 
     setBTCValue(btc);
     setDAIValue(convertToDAI(btc));
   };
 
   const handleDAIChange = e => {
-    const dai = e.target.value;
+    const dai = parseFloat(e.target.value);
 
     setDAIValue(dai);
     setBTCValue(convertToBTC(dai));
