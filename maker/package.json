@@ -9,9 +9,7 @@
   "scripts": {
     "test": "tap test/**/*.test.js",
     "start": "fastify start -l info app.js",
-    "dev": "concurrently \"fastify start -w -l info -P app.js\" \"yarn dev:env\"",
-    "dev:env": "comit-scripts start-env",
-    "dev:clean": "comit-scripts force-clean-env"
+    "dev": "fastify start -w -l info -P app.js"
   },
   "keywords": [],
   "author": "",
@@ -26,8 +24,6 @@
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "comit-scripts": "^0.8.3",
-    "concurrently": "^5.1.0",
     "tap": "^12.5.3"
   }
 }
