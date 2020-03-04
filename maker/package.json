@@ -9,12 +9,15 @@
   "scripts": {
     "test": "tap test/**/*.test.js",
     "start": "fastify start -l info app.js",
-    "dev": "fastify start -w -l info -P app.js"
+    "dev": "yarn run dev:env && fastify start -w -l info -P app.js",
+    "dev:env": "comit-scripts start-env",
+    "dev:clean": "comit-scripts force-clean-env"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "comit-sdk": "^0.13.0",
     "fastify": "^2.0.0",
     "fastify-autoload": "^1.0.0",
     "fastify-cli": "^1.4.0",
@@ -23,6 +26,7 @@
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "tap": "^12.5.3"
+    "tap": "^12.5.3",
+    "comit-scripts": "^0.8.3"
   }
 }
