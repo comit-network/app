@@ -64,6 +64,10 @@ export default function SwapForm(props: Props) {
       DAIValue,
       rate
     };
+
+    // TODO: initializeTaker
+
+    // TODO: createSwap(maker.peerId, maker.addressHint)
     console.log(swap); // prettier-ignore
   };
 

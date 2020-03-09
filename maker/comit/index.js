@@ -26,7 +26,7 @@ function loadEnvironment() {
   dotenv.config({ path: envFilePath });
 }
 
-async function initializeNodes(index, name) {
+async function getNode(index, name) {
   const bitcoinWallet = await InMemoryBitcoinWallet.newInstance(
     "regtest",
     process.env.BITCOIN_P2P_URI,
@@ -49,5 +49,5 @@ async function initializeNodes(index, name) {
 
 module.exports = {
   loadEnvironment,
-  initializeNodes
+  getNode
 }
