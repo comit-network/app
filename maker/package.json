@@ -24,6 +24,7 @@
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "tap": "^12.5.3"
+    "tap": "^12.5.3",
+    "dotenv": "^8.1.0"
   }
 }
