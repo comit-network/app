@@ -10,6 +10,8 @@ import {
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import moment from 'moment';
+import { toSatoshi } from 'satoshi-bitcoin-ts';
 
 export function loadEnvironment() {
   // TODO: change this to use .env within the `maker` directory
@@ -26,12 +28,13 @@ export function loadEnvironment() {
   dotenv.config({ path: envFilePath });
 }
 
-export async function initializeNodes(index, name) {
+export async function getNode(index, name) {
   const bitcoinWallet = await InMemoryBitcoinWallet.newInstance(
     'regtest',
     process.env.BITCOIN_P2P_URI,
     process.env[`BITCOIN_HD_KEY_${index}`]
   );
+
   const ethereumWallet = new EthereumWallet(
     process.env.ETHEREUM_NODE_HTTP_URL,
     process.env[`ETHEREUM_KEY_${index}`]
@@ -43,4 +46,37 @@ export async function initializeNodes(index, name) {
     process.env[`HTTP_URL_CND_${index}`],
     name
   );
+}
+
+export function createDAItoBTCSwap(
+  makerPeerId,
+  makerAddressHint,
+  takerETHAddress
+) {
+  return {
+    alpha_ledger: {
+      name: 'ethereum',
+      chain_id: 17
+    },
+    beta_ledger: {
+      name: 'bitcoin',
+      network: 'regtest'
+    },
+    alpha_asset: {
+      name: 'erc20',
+      token_contract: process.env.ERC20_CONTRACT_ADDRESS,
+      quantity: '10000000000000000000'
+    },
+    beta_asset: {
+      name: 'bitcoin',
+      quantity: toSatoshi(1).toString()
+    },
+    alpha_ledger_refund_identity: takerETHAddress,
+    alpha_expiry: moment().unix() + 7200,
+    beta_expiry: moment().unix() + 3600,
+    peer: {
+      peer_id: makerPeerId,
+      address_hint: makerAddressHint
+    }
+  };
 }
