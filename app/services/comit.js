@@ -11,7 +11,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-function loadEnvironment() {
+export function loadEnvironment() {
   // TODO: change this to use .env within the `maker` directory
   const envFilePath = path.join(os.homedir(), '.create-comit-app', 'env');
 
@@ -26,7 +26,7 @@ function loadEnvironment() {
   dotenv.config({ path: envFilePath });
 }
 
-async function initializeNodes(index, name) {
+export async function initializeNodes(index, name) {
   const bitcoinWallet = await InMemoryBitcoinWallet.newInstance(
     'regtest',
     process.env.BITCOIN_P2P_URI,
@@ -44,8 +44,3 @@ async function initializeNodes(index, name) {
     name
   );
 }
-
-module.exports = {
-  loadEnvironment,
-  initializeNodes
-};
