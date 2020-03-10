@@ -11,7 +11,11 @@ import {
   Heading,
   Input
 } from 'rimble-ui';
-import { loadEnvironment } from '../services/comit';
+import {
+  loadEnvironment,
+  getNode,
+  createDAItoBTCSwap
+} from '../services/comit';
 
 type Props = {
   rate: number;
@@ -58,20 +62,29 @@ export default function SwapForm(props: Props) {
     validateForm();
   });
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const swap = {
       BTCValue,
       DAIValue,
       rate
     };
+    console.log(swap); // prettier-ignore
 
     loadEnvironment();
     console.log(process.env);
-    // TODO: initializeTaker
 
-    // TODO: createSwap(maker.peerId, maker.addressHint)
-    console.log(swap); // prettier-ignore
+    // TODO: set Loading with useState hooks
+
+    // initialize Taker
+    const taker = await getNode(1, 'Taker');
+    // TODO: use Redux actions to dispatch, or hooks
+
+    console.log(taker.peerId);
+
+    // TODO: get maker.peerId and maker.addressHint
+    // TODO: get taker ethereum wallet address
+    // const swapJSON = createDAItoBTCSwap
   };
 
   return (
