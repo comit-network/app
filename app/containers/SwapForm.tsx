@@ -11,6 +11,7 @@ import {
   Heading,
   Input
 } from 'rimble-ui';
+import { loadEnvironment } from '../services/comit';
 
 type Props = {
   rate: number;
@@ -65,6 +66,8 @@ export default function SwapForm(props: Props) {
       rate
     };
 
+    loadEnvironment();
+    console.log(process.env);
     // TODO: initializeTaker
 
     // TODO: createSwap(maker.peerId, maker.addressHint)
