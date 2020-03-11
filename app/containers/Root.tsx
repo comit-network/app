@@ -6,6 +6,7 @@ import { History } from 'history';
 import { BaseStyles } from 'rimble-ui';
 import { Store } from '../reducers/types';
 import Routes from '../Routes';
+import { loadEnvironment } from '../utils/comit';
 
 type Props = {
   store: Store;
@@ -13,6 +14,8 @@ type Props = {
 };
 
 const Root = ({ store, history }: Props) => {
+  loadEnvironment();
+
   return (
     <Provider store={store}>
       <ConnectedRouter history={history}>
