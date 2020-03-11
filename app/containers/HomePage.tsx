@@ -11,11 +11,19 @@ export default function HomePage() {
   const [taker, setTaker] = useState({});
 
   useEffect(() => {
+    loadEnvironment();
+  }, []);
+
+  useEffect(() => {
     async function fetchMaker() {
       const res = await fetch('http://localhost:3000/');
       const { peerId, addressHint, ETHAddress, BTCAddress } = await res.json();
       setMaker({ peerId, addressHint, ETHAddress, BTCAddress });
     }
+    fetchMaker();
+  }, []);
+
+  useEffect(() => {
     async function fetchTaker() {
       const t = await getNode(1, 'Taker');
       const { peerId, addressHint } = t;
@@ -29,14 +37,15 @@ export default function HomePage() {
         client: t.comitClient
       });
     }
+    fetchTaker();
+  }, []);
+
+  useEffect(() => {
     async function fetchRate() {
       const res = await fetch('http://localhost:3000/rates');
       const { rates } = await res.json();
       setRate(rates.dai.btc);
     }
-    loadEnvironment();
-    fetchMaker();
-    fetchTaker();
     fetchRate();
   }, []);
 
