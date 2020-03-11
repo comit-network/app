@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { Box, Card, Heading, Text } from 'rimble-ui';
-import { loadEnvironment, getNode } from '../utils/comit';
+import { Box, Card, Heading } from 'rimble-ui';
+import { getNode } from '../utils/comit';
 import SwapForm from './SwapForm';
 import SwapList from '../components/SwapList';
 
@@ -9,10 +9,6 @@ export default function HomePage() {
   const [rate, setRate] = useState('Loading...');
   const [maker, setMaker] = useState({});
   const [taker, setTaker] = useState({});
-
-  useEffect(() => {
-    loadEnvironment();
-  }, []);
 
   useEffect(() => {
     async function fetchMaker() {
