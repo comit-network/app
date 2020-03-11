@@ -10,7 +10,8 @@ import {
   Flex,
   Card,
   Heading,
-  Input
+  Input,
+  EthAddress
 } from 'rimble-ui';
 // import { Redirect } from 'react-router-dom';
 import { buildSwap } from '../utils/comit';
@@ -106,7 +107,7 @@ export default function SwapForm(props: Props) {
               </Field>
             </Box>
           </Flex>
-          <Pill style={{ margin: '10px 0px' }}>
+          <Pill color="primary" style={{ margin: '10px 0px' }}>
             Rate: 1 BTC = {(1 / rate).toFixed(4)} DAI
           </Pill>
           <Button
@@ -122,9 +123,17 @@ export default function SwapForm(props: Props) {
       <Card my={4}>
         <Heading as="h4">Form values</Heading>
         <Text>Form validated: {formValidated.toString()}</Text>
-        <Text>BTC value: {BTCValue}</Text>
-        <Text>DAI value: {DAIValue}</Text>
-        <Text>Taker ETH address: {taker.ETHAddress}</Text>
+        <Text>DAI to send: {DAIValue}</Text>
+        <Text>BTC to receive: {BTCValue}</Text>
+        <br />
+        <Text>Maker ETH & BTC address: </Text>
+        <EthAddress address={maker.ETHAddress} />
+        <EthAddress address={maker.BTCAddress} />
+        <br />
+        <Text>Your ETH & BTC address:</Text>
+        <EthAddress address={taker.ETHAddress} />
+        <EthAddress address={taker.BTCAddress} />
+        {/* TODO: fork EthAddress component for bitcoin */}
       </Card>
     </Box>
   );

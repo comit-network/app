@@ -11,14 +11,15 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchMaker() {
       const res = await fetch('http://localhost:3000/');
-      const { peerId, addressHint } = await res.json();
-      setMaker({ peerId, addressHint });
+      const { peerId, addressHint, ETHAddress, BTCAddress } = await res.json();
+      setMaker({ peerId, addressHint, ETHAddress, BTCAddress });
     }
     async function fetchTaker() {
       const t = await getNode(1, 'Taker');
       const { peerId, addressHint } = t;
       const ETHAddress = await t.ethereumWallet.getAccount();
-      setTaker({ peerId, addressHint, ETHAddress });
+      const BTCAddress = await t.bitcoinWallet.getAddress();
+      setTaker({ peerId, addressHint, ETHAddress, BTCAddress });
     }
     async function fetchRate() {
       const res = await fetch('http://localhost:3000/rates');
