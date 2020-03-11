@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { Card, Heading, Text } from 'rimble-ui';
+import { Box, Card, Heading, Text } from 'rimble-ui';
 import { loadEnvironment, getNode } from '../utils/comit';
 import SwapForm from './SwapForm';
+import SwapList from '../components/SwapList';
 
 export default function HomePage() {
   const [rate, setRate] = useState('Loading...');
   const [maker, setMaker] = useState({});
   const [taker, setTaker] = useState({});
-  const [activeSwap, setActiveSwap] = useState({});
 
   useEffect(() => {
     async function fetchMaker() {
@@ -40,32 +40,29 @@ export default function HomePage() {
     fetchRate();
   }, []);
 
-  const onSwapSent = swapDetails => {
+  const onSwapSent = swapId => {
     console.log('onSwapSent');
-    console.log(swapDetails);
-    setActiveSwap(swapDetails);
+    console.log(swapId);
+    // TODO: redirect to SwapPage /swaps/:id
   };
 
-  if (!_.isEmpty(activeSwap)) {
-    return (
-      <Card>
-        <Heading>Confirming swap</Heading>
-
-        <Text>{JSON.stringify(activeSwap)}</Text>
-      </Card>
-    );
-  }
-
   return (
-    <Card>
-      <Heading>Swap DAI for BTC</Heading>
+    <Box>
+      <Card>
+        <Heading>Swap DAI for BTC</Heading>
 
-      <SwapForm
-        rate={rate}
-        maker={maker}
-        taker={taker}
-        onSwapSent={onSwapSent}
-      />
-    </Card>
+        <SwapForm
+          rate={rate}
+          maker={maker}
+          taker={taker}
+          onSwapSent={onSwapSent}
+        />
+      </Card>
+
+      <Card>
+        <SwapList />
+        {/* TODO: SwapList, listing all active swaps */}
+      </Card>
+    </Box>
   );
 }
