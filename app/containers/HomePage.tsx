@@ -1,5 +1,6 @@
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { Card, Heading } from 'rimble-ui';
+import { Card, Heading, Text } from 'rimble-ui';
 import { loadEnvironment, getNode } from '../utils/comit';
 import SwapForm from './SwapForm';
 
@@ -7,6 +8,7 @@ export default function HomePage() {
   const [rate, setRate] = useState('Loading...');
   const [maker, setMaker] = useState({});
   const [taker, setTaker] = useState({});
+  const [activeSwap, setActiveSwap] = useState({});
 
   useEffect(() => {
     async function fetchMaker() {
@@ -19,7 +21,13 @@ export default function HomePage() {
       const { peerId, addressHint } = t;
       const ETHAddress = await t.ethereumWallet.getAccount();
       const BTCAddress = await t.bitcoinWallet.getAddress();
-      setTaker({ peerId, addressHint, ETHAddress, BTCAddress });
+      setTaker({
+        peerId,
+        addressHint,
+        ETHAddress,
+        BTCAddress,
+        client: t.comitClient
+      });
     }
     async function fetchRate() {
       const res = await fetch('http://localhost:3000/rates');
@@ -32,13 +40,32 @@ export default function HomePage() {
     fetchRate();
   }, []);
 
-  return (
-    <div data-tid="container">
-      <Card>
-        <Heading>Swap BTC - DAI</Heading>
+  const onSwapSent = swapDetails => {
+    console.log('onSwapSent');
+    console.log(swapDetails);
+    setActiveSwap(swapDetails);
+  };
 
-        <SwapForm rate={rate} maker={maker} taker={taker} />
+  if (!_.isEmpty(activeSwap)) {
+    return (
+      <Card>
+        <Heading>Confirming swap</Heading>
+
+        <Text>{JSON.stringify(activeSwap)}</Text>
       </Card>
-    </div>
+    );
+  }
+
+  return (
+    <Card>
+      <Heading>Swap DAI for BTC</Heading>
+
+      <SwapForm
+        rate={rate}
+        maker={maker}
+        taker={taker}
+        onSwapSent={onSwapSent}
+      />
+    </Card>
   );
 }

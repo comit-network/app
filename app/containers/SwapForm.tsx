@@ -1,19 +1,5 @@
-import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Form,
-  Pill,
-  Field,
-  Button,
-  Text,
-  Flex,
-  Card,
-  Heading,
-  Input,
-  EthAddress
-} from 'rimble-ui';
-// import { Redirect } from 'react-router-dom';
+import { Box, Form, Pill, Field, Button, Flex, Input, Loader } from 'rimble-ui';
 import { buildSwap } from '../utils/comit';
 
 type Props = {
@@ -21,10 +7,11 @@ type Props = {
 };
 
 export default function SwapForm(props: Props) {
-  const { rate, maker, taker } = props;
+  const { rate, maker, taker, onSwapSent } = props;
   const [formValidated, setFormValidated] = useState(false);
-  const [BTCValue, setBTCValue] = useState(0);
-  const [DAIValue, setDAIValue] = useState(0);
+  const [BTCAmount, setBTCAmount] = useState(0);
+  const [DAIAmount, setDAIAmount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const convertToDAI = btc => {
     return btc * (1 / rate);
@@ -37,20 +24,20 @@ export default function SwapForm(props: Props) {
   const onBTCChange = e => {
     const btc = parseFloat(e.target.value);
 
-    setBTCValue(btc);
-    setDAIValue(convertToDAI(btc));
+    setBTCAmount(btc);
+    setDAIAmount(convertToDAI(btc));
   };
 
   const handleDAIChange = e => {
     const dai = parseFloat(e.target.value);
 
-    setDAIValue(dai);
-    setBTCValue(convertToBTC(dai));
+    setDAIAmount(dai);
+    setBTCAmount(convertToBTC(dai));
   };
 
   const validateForm = () => {
     // Perform advanced validation here
-    if (BTCValue > 0 && DAIValue > 0) {
+    if (BTCAmount > 0 && DAIAmount > 0) {
       setFormValidated(true);
     } else {
       setFormValidated(false);
@@ -63,17 +50,21 @@ export default function SwapForm(props: Props) {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const swapPayload = buildSwap(
+    const payload = buildSwap(
       maker.peerId,
       maker.addressHint,
       taker.ETHAddress,
-      DAIValue,
-      BTCValue
+      DAIAmount,
+      BTCAmount
     );
 
-    console.log(swapPayload);
+    setLoading(true);
+    const swap = await taker.client.sendSwap(payload);
+    const { properties: swapDetails } = await swap.fetchDetails();
+    setLoading(false);
 
-    // TODO: onSubmit, call sendSwap and redirect to wait <Redirect to="/swap" />;
+    console.log(swapDetails);
+    onSwapSent(swapDetails); // TODO: we may not need this if we can get the swap from Maker /swaps
   };
 
   // if (sendSwap) completed, redirect to swap status page
@@ -89,7 +80,7 @@ export default function SwapForm(props: Props) {
                   type="number"
                   required
                   onChange={handleDAIChange}
-                  value={DAIValue}
+                  value={DAIAmount}
                   width={1}
                 />
               </Field>
@@ -100,7 +91,7 @@ export default function SwapForm(props: Props) {
                   type="number"
                   required
                   onChange={onBTCChange}
-                  value={BTCValue}
+                  value={BTCAmount}
                   width={1}
                   step="0.1"
                 />
@@ -113,28 +104,12 @@ export default function SwapForm(props: Props) {
           <Button
             style={{ width: '100%' }}
             type="submit"
-            disabled={!formValidated}
-            icon="SwapHoriz"
+            disabled={!formValidated || loading}
           >
-            Swap
+            {loading ? <Loader color="white" /> : null} Start Swap
           </Button>
         </Form>
       </Box>
-      <Card my={4}>
-        <Heading as="h4">Form values</Heading>
-        <Text>Form validated: {formValidated.toString()}</Text>
-        <Text>DAI to send: {DAIValue}</Text>
-        <Text>BTC to receive: {BTCValue}</Text>
-        <br />
-        <Text>Maker ETH & BTC address: </Text>
-        <EthAddress address={maker.ETHAddress} />
-        <EthAddress address={maker.BTCAddress} />
-        <br />
-        <Text>Your ETH & BTC address:</Text>
-        <EthAddress address={taker.ETHAddress} />
-        <EthAddress address={taker.BTCAddress} />
-        {/* TODO: fork EthAddress component for bitcoin */}
-      </Card>
     </Box>
   );
 }
