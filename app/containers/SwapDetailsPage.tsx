@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Heading } from 'rimble-ui';
-import SwapForm from './SwapForm';
 
-export default function SwapConfirmationPage() {
+export default function SwapDetailsPage() {
+  const { id } = useParams();
   // TODO: loading screen for polling
 
   return (
     <div data-tid="container">
       <Card>
-        <Heading>SwapConfirmationPage</Heading>
+        <Heading>SwapDetailsPage {id}</Heading>
       </Card>
     </div>
   );

@@ -60,56 +60,52 @@ export default function SwapForm(props: Props) {
 
     setLoading(true);
     const swap = await taker.client.sendSwap(payload);
-    const { properties: swapDetails } = await swap.fetchDetails();
+    const {
+      properties: { id: swapId }
+    } = await swap.fetchDetails();
     setLoading(false);
-
-    console.log(swapDetails);
-    onSwapSent(swapDetails); // TODO: we may not need this if we can get the swap from Maker /swaps
+    onSwapSent(swapId);
   };
 
-  // if (sendSwap) completed, redirect to swap status page
-
   return (
-    <Box p={4}>
-      <Box>
-        <Form onSubmit={handleSubmit} validated={formValidated}>
-          <Flex mx={-3} flexWrap="wrap">
-            <Box width={[1, 1, 1 / 2]} px={3}>
-              <Field label="DAI to send" width={1}>
-                <Input
-                  type="number"
-                  required
-                  onChange={handleDAIChange}
-                  value={DAIAmount}
-                  width={1}
-                />
-              </Field>
-            </Box>
-            <Box width={[1, 1, 1 / 2]} px={3}>
-              <Field label="BTC to receive" width={1}>
-                <Input
-                  type="number"
-                  required
-                  onChange={onBTCChange}
-                  value={BTCAmount}
-                  width={1}
-                  step="0.1"
-                />
-              </Field>
-            </Box>
-          </Flex>
-          <Pill color="primary" style={{ margin: '10px 0px' }}>
-            Rate: 1 BTC = {(1 / rate).toFixed(4)} DAI
-          </Pill>
-          <Button
-            style={{ width: '100%' }}
-            type="submit"
-            disabled={!formValidated || loading}
-          >
-            {loading ? <Loader color="white" /> : null} Start Swap
-          </Button>
-        </Form>
-      </Box>
+    <Box>
+      <Form onSubmit={handleSubmit} validated={formValidated}>
+        <Flex mx={-3} flexWrap="wrap">
+          <Box width={[1, 1, 1 / 2]} px={3}>
+            <Field label="DAI to send" width={1}>
+              <Input
+                type="number"
+                required
+                onChange={handleDAIChange}
+                value={DAIAmount}
+                width={1}
+              />
+            </Field>
+          </Box>
+          <Box width={[1, 1, 1 / 2]} px={3}>
+            <Field label="BTC to receive" width={1}>
+              <Input
+                type="number"
+                required
+                onChange={onBTCChange}
+                value={BTCAmount}
+                width={1}
+                step="0.1"
+              />
+            </Field>
+          </Box>
+        </Flex>
+        <Pill color="primary" style={{ margin: '10px 0px' }}>
+          Rate: 1 BTC = {(1 / rate).toFixed(4)} DAI
+        </Pill>
+        <Button
+          style={{ width: '100%' }}
+          type="submit"
+          disabled={!formValidated || loading}
+        >
+          {loading ? <Loader color="white" /> : null} Start Swap
+        </Button>
+      </Form>
     </Box>
   );
 }
