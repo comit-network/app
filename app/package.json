@@ -15,7 +15,9 @@
   },
   "license": "MIT",
   "dependencies": {
+    "bn.js": "^5.1.1",
     "comit-sdk": "^0.14.0",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "satoshi-bitcoin-ts": "^0.2.4"
   }

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -11,18 +12,15 @@ import {
   Heading,
   Input
 } from 'rimble-ui';
-import {
-  loadEnvironment,
-  getNode,
-  createDAItoBTCSwap
-} from '../services/comit';
+// import { Redirect } from 'react-router-dom';
+import { buildSwap } from '../utils/comit';
 
 type Props = {
   rate: number;
 };
 
 export default function SwapForm(props: Props) {
-  const { rate } = props;
+  const { rate, maker, taker } = props;
   const [formValidated, setFormValidated] = useState(false);
   const [BTCValue, setBTCValue] = useState(0);
   const [DAIValue, setDAIValue] = useState(0);
@@ -64,28 +62,20 @@ export default function SwapForm(props: Props) {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const swap = {
-      BTCValue,
+    const swapPayload = buildSwap(
+      maker.peerId,
+      maker.addressHint,
+      taker.ETHAddress,
       DAIValue,
-      rate
-    };
-    console.log(swap); // prettier-ignore
+      BTCValue
+    );
 
-    loadEnvironment();
-    console.log(process.env);
+    console.log(swapPayload);
 
-    // TODO: set Loading with useState hooks
-
-    // initialize Taker
-    const taker = await getNode(1, 'Taker');
-    // TODO: use Redux actions to dispatch, or hooks
-
-    console.log(taker.peerId);
-
-    // TODO: get maker.peerId and maker.addressHint
-    // TODO: get taker ethereum wallet address
-    // const swapJSON = createDAItoBTCSwap
+    // TODO: onSubmit, call sendSwap and redirect to wait <Redirect to="/swap" />;
   };
+
+  // if (sendSwap) completed, redirect to swap status page
 
   return (
     <Box p={4}>
@@ -93,7 +83,18 @@ export default function SwapForm(props: Props) {
         <Form onSubmit={handleSubmit} validated={formValidated}>
           <Flex mx={-3} flexWrap="wrap">
             <Box width={[1, 1, 1 / 2]} px={3}>
-              <Field label="BTC to send" width={1}>
+              <Field label="DAI to send" width={1}>
+                <Input
+                  type="number"
+                  required
+                  onChange={handleDAIChange}
+                  value={DAIValue}
+                  width={1}
+                />
+              </Field>
+            </Box>
+            <Box width={[1, 1, 1 / 2]} px={3}>
+              <Field label="BTC to receive" width={1}>
                 <Input
                   type="number"
                   required
@@ -101,17 +102,6 @@ export default function SwapForm(props: Props) {
                   value={BTCValue}
                   width={1}
                   step="0.1"
-                />
-              </Field>
-            </Box>
-            <Box width={[1, 1, 1 / 2]} px={3}>
-              <Field label="DAI to receive" width={1}>
-                <Input
-                  type="number"
-                  required
-                  onChange={handleDAIChange}
-                  value={DAIValue}
-                  width={1}
                 />
               </Field>
             </Box>
@@ -134,6 +124,7 @@ export default function SwapForm(props: Props) {
         <Text>Form validated: {formValidated.toString()}</Text>
         <Text>BTC value: {BTCValue}</Text>
         <Text>DAI value: {DAIValue}</Text>
+        <Text>Taker ETH address: {taker.ETHAddress}</Text>
       </Card>
     </Box>
   );

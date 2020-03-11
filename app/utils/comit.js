@@ -12,6 +12,7 @@ import os from 'os';
 import path from 'path';
 import moment from 'moment';
 import { toSatoshi } from 'satoshi-bitcoin-ts';
+import toBaseUnit from './index';
 
 export function loadEnvironment() {
   // TODO: change this to use .env within the `maker` directory
@@ -48,10 +49,12 @@ export async function getNode(index, name) {
   );
 }
 
-export function createDAItoBTCSwap(
+export function buildSwap(
   makerPeerId,
   makerAddressHint,
-  takerETHAddress
+  takerETHAddress,
+  daiAmount,
+  btcAmount
 ) {
   return {
     alpha_ledger: {
@@ -65,11 +68,11 @@ export function createDAItoBTCSwap(
     alpha_asset: {
       name: 'erc20',
       token_contract: process.env.ERC20_CONTRACT_ADDRESS,
-      quantity: '10000000000000000000'
+      quantity: toBaseUnit(daiAmount.toString(), 18).toString() // ERC20 amount in 18 decimals, converted from float
     },
     beta_asset: {
       name: 'bitcoin',
-      quantity: toSatoshi(1).toString()
+      quantity: toSatoshi(btcAmount).toString()
     },
     alpha_ledger_refund_identity: takerETHAddress,
     alpha_expiry: moment().unix() + 7200,
