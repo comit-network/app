@@ -9,14 +9,27 @@ export default function HomePage() {
   const [rate, setRate] = useState('Loading...');
   const [maker, setMaker] = useState({});
   const [taker, setTaker] = useState({});
+  const [swaps, setSwaps] = useState([]);
+
+  // TODO: useEffect for localhost:3000/swaps, to be passed down to SwapList as props
 
   useEffect(() => {
     async function fetchMaker() {
-      const res = await fetch('http://localhost:3000/');
+      const res = await fetch('http://localhost:3000/'); // TODO: add MAKER_URL to .env
       const { peerId, addressHint, ETHAddress, BTCAddress } = await res.json();
       setMaker({ peerId, addressHint, ETHAddress, BTCAddress });
     }
     fetchMaker();
+  }, []);
+
+  useEffect(() => {
+    async function fetchSwaps() {
+      const res = await fetch('http://localhost:3000/swaps'); // TODO: add MAKER_URL to .env
+      const { new: newSwaps } = await res.json();
+      // TODO: only render new swaps for now
+      setSwaps(newSwaps);
+    }
+    fetchSwaps();
   }, []);
 
   useEffect(() => {
@@ -54,7 +67,7 @@ export default function HomePage() {
   return (
     <Box>
       <Card>
-        <Heading>Swap DAI for BTC</Heading>
+        <Heading textAlign="center">Swap DAI for BTC</Heading>
 
         <SwapForm
           rate={rate}
@@ -64,10 +77,11 @@ export default function HomePage() {
         />
       </Card>
 
-      <Card>
-        <SwapList />
-        {/* TODO: SwapList, listing all active swaps */}
-      </Card>
+      <br />
+
+      <Box p={1}>
+        <SwapList swaps={swaps} />
+      </Box>
     </Box>
   );
 }
