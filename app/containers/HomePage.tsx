@@ -1,4 +1,4 @@
-import _ from 'lodash';
+// import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Box, Card, Heading } from 'rimble-ui';
 import { getNode } from '../utils/comit';
@@ -10,8 +10,6 @@ export default function HomePage() {
   const [maker, setMaker] = useState({});
   const [taker, setTaker] = useState({});
   const [swaps, setSwaps] = useState([]);
-
-  // TODO: useEffect for localhost:3000/swaps, to be passed down to SwapList as props
 
   useEffect(() => {
     async function fetchMaker() {
@@ -25,9 +23,8 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchSwaps() {
       const res = await fetch('http://localhost:3000/swaps'); // TODO: add MAKER_URL to .env
-      const { new: newSwaps } = await res.json();
-      // TODO: only render new swaps for now
-      setSwaps(newSwaps);
+      const { swaps: allSwaps } = await res.json();
+      setSwaps(allSwaps);
     }
     fetchSwaps();
   }, []);
