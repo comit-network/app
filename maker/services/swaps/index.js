@@ -32,17 +32,8 @@ async function findSwapById(id) {
 
 module.exports = function (fastify, opts, next) {
   fastify.get('/swaps', async function (request) {
-    const maker = await getNode(0, 'Maker');
-    const newSwaps = await maker.comitClient.getNewSwaps();
-    const newSwapsProperties = await parseProperties(newSwaps);
-
-    const ongoingSwaps = await maker.comitClient.getOngoingSwaps();
-    const ongoingSwapsProperties = await parseProperties(ongoingSwaps);
-
-    const doneSwaps = await maker.comitClient.getDoneSwaps();
-    const doneSwapsProperties = await await parseProperties(doneSwaps);
-
-    return { new: newSwapsProperties, ongoing: ongoingSwapsProperties, done: doneSwapsProperties };
+    const swaps = await getSwaps();
+    return { swaps };
   })
 
   fastify.get('/swaps/:id', async function (request) {
