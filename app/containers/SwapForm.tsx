@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Form, Pill, Field, Button, Flex, Input, Loader } from 'rimble-ui';
+import {
+  Box,
+  Form,
+  Flash,
+  Field,
+  Button,
+  Flex,
+  Input,
+  Loader
+} from 'rimble-ui';
+import { toBitcoin } from 'satoshi-bitcoin-ts';
 import { buildSwap } from '../utils/comit';
 
 type Props = {
@@ -95,9 +105,9 @@ export default function SwapForm(props: Props) {
             </Field>
           </Box>
         </Flex>
-        <Pill color="primary" style={{ margin: '10px 0px' }}>
+        <Flash my={3} variant="info">
           Rate: 1 BTC = {(1 / rate).toFixed(4)} DAI
-        </Pill>
+        </Flash>
         <Button
           style={{ width: '100%' }}
           type="submit"
