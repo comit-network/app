@@ -9,7 +9,6 @@ import {
   Input,
   Loader
 } from 'rimble-ui';
-import { toBitcoin } from 'satoshi-bitcoin-ts';
 import { buildSwap } from '../utils/comit';
 
 type Props = {
