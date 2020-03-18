@@ -27,7 +27,7 @@ export async function getNode(index, name) {
   );
 }
 
-async function getTaker() {
+export async function getTaker() {
   const taker = await getNode(1, 'Taker');
   return taker;
 }

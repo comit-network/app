@@ -1,11 +1,18 @@
 // import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Box, Card, Heading } from 'rimble-ui';
-import { getNode } from '../utils/comit';
+import { getTaker } from '../utils/comit';
 import SwapForm from './SwapForm';
 import SwapList from '../components/SwapList';
 
-export default function HomePage() {
+// TODO: add MAKER_URL to .env
+const MAKER_URL = 'http://localhost:3000';
+
+type Props = {
+  history: History;
+};
+
+export default function HomePage(props: Props) {
   const [rate, setRate] = useState('Loading...');
   const [maker, setMaker] = useState({});
   const [taker, setTaker] = useState({});
@@ -13,7 +20,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchMaker() {
-      const res = await fetch('http://localhost:3000/'); // TODO: add MAKER_URL to .env
+      const res = await fetch(MAKER_URL);
       const { peerId, addressHint, ETHAddress, BTCAddress } = await res.json();
       setMaker({ peerId, addressHint, ETHAddress, BTCAddress });
     }
@@ -22,7 +29,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchSwaps() {
-      const res = await fetch('http://localhost:3000/swaps'); // TODO: add MAKER_URL to .env
+      const res = await fetch(`${MAKER_URL}/swaps`);
       const { swaps: allSwaps } = await res.json();
       setSwaps(allSwaps);
     }
@@ -31,7 +38,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchTaker() {
-      const t = await getNode(1, 'Taker');
+      const t = await getTaker();
       const { peerId, addressHint } = t;
       const ETHAddress = await t.ethereumWallet.getAccount();
       const BTCAddress = await t.bitcoinWallet.getAddress();
@@ -48,7 +55,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchRate() {
-      const res = await fetch('http://localhost:3000/rates');
+      const res = await fetch(`${MAKER_URL}/rates`);
       const { rates } = await res.json();
       setRate(rates.dai.btc);
     }
@@ -56,9 +63,8 @@ export default function HomePage() {
   }, []);
 
   const onSwapSent = swapId => {
-    console.log('onSwapSent');
-    console.log(swapId);
-    // TODO: redirect to SwapPage /swaps/:id
+    // Redirect to track swap on new swap
+    props.history.push(`/swaps/${swapId}`);
   };
 
   return (
