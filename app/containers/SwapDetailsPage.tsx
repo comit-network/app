@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Tooltip,
@@ -16,6 +16,24 @@ import { toBitcoin } from 'satoshi-bitcoin-ts';
 
 import routes from '../constants/routes.json';
 
+// TODO: extract to utils
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  });
+
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+
+    let id = setInterval(tick, delay); // eslint-disable-line
+    return () => clearInterval(id);
+  }, [delay]);
+}
+
 export default function SwapDetailsPage() {
   const { id } = useParams();
   const [swap, setSwap] = useState();
@@ -29,6 +47,17 @@ export default function SwapDetailsPage() {
     }
     fetchSwap(id);
   }, []);
+
+  useInterval(() => {
+    const res = await fetch(`http://localhost:3000/swaps/${swapId}`);
+    const { swap: s } = await res.json();
+
+    console.log('poll');
+    console.log(s);
+
+    // TODO: call getTakerSwapStatus()
+    // TODO: call getTakerNextStep()
+  }, 2000); // Poll every 2 seconds
 
   // TODO: useEffect to get /swaps:id
 
