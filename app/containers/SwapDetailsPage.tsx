@@ -16,7 +16,7 @@ import { toBitcoin } from 'satoshi-bitcoin-ts';
 
 import routes from '../constants/routes.json';
 
-// TODO: extract to utils
+// TODO: extract hook to utils
 function useInterval(callback, delay) {
   const savedCallback = useRef();
 
@@ -49,14 +49,17 @@ export default function SwapDetailsPage() {
   }, []);
 
   useInterval(() => {
-    const res = await fetch(`http://localhost:3000/swaps/${swapId}`);
-    const { swap: s } = await res.json();
+    async function pollSwap(swapId) {
+      // TODO: add MAKER_URL to application-level .env
+      const res = await fetch(`http://localhost:3000/swaps/${swapId}`);
+      const { swap: s } = await res.json();
+      console.log('poll');
+      console.log(s);
 
-    console.log('poll');
-    console.log(s);
-
-    // TODO: call getTakerSwapStatus()
-    // TODO: call getTakerNextStep()
+      // TODO: call getTakerSwapStatus()
+      // TODO: call getTakerNextStep()
+    }
+    pollSwap(id);
   }, 2000); // Poll every 2 seconds
 
   // TODO: useEffect to get /swaps:id
