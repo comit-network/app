@@ -1,16 +1,24 @@
 const {
   loadEnvironment,
-  findSwapById
+  getSwaps,
+  findSwapById,
+  parseMakerSwapStatus, // optional
+  runMakerNextStep
 } = require('./comit');
 
 const sleep = m => new Promise(r => setTimeout(r, m))
 const pollForever = async (collection, ms) => {
-  // Make Async Call
-  // for (let item of collection) {
-  //   await MakeAsyncCall(item);
-  // }
-  const swap = await findSwapById('9060bc0a-fd1f-4811-8fb3-f2acb9409991');
-  console.log(swap);
+  console.log('getSwaps()');
+  const swaps = await getSwaps(); // Get all swaps
+
+  console.log('checking status of swaps')
+  for (let swap of swaps) {
+    const status = parseMakerSwapStatus(swap); // This part is optional, part of runMakerNextStep()
+    console.log(swap.id);
+    console.log(status);
+
+    // await runMakerNextStep(swap.id)
+  }
 
   // Wait X ms Before Processing Continues
   await sleep(ms);
