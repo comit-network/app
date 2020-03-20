@@ -39,8 +39,8 @@ async function findSwapById(swapId) {
   return properties[0];
 }
 
-async function getMakerSwapStatus(swapId) {
-  const { state } = await findSwapById(swapId);
+function parseMakerSwapStatus(swapProperties) {
+  const { state } = swapProperties;
 
   const TAKER_SENT = (state.communication.status === 'SENT' && state.alpha_ledger.status === 'NOT_DEPLOYED' && state.beta_ledger.status === 'NOT_DEPLOYED');
   if (TAKER_SENT) {
@@ -61,7 +61,7 @@ async function getMakerSwapStatus(swapId) {
   return 'DONE';
 }
 
-async function getMakerNextStep(swapId) {
+async function runMakerNextStep(swapId) {
   const maker = await getMaker();
   const makerSwapHandle = await maker.comitClient.retrieveSwapById(swapId);
 
@@ -74,8 +74,9 @@ async function getMakerNextStep(swapId) {
       return true;
     },
   }
-  const swapStatus = await getMakerSwapStatus(swapId);
-  return MAKER_SWAP_STATE_MACHINE[swapStatus];
+  const swapStatus = await parseMakerSwapStatus(swapId);
+  const result = await MAKER_SWAP_STATE_MACHINE[swapStatus];
+  return result;
 }
 
 function loadEnvironment() {
@@ -125,6 +126,6 @@ module.exports = {
   getMaker,
   getSwaps,
   findSwapById,
-  getMakerSwapStatus,
-  getMakerNextStep
+  parseMakerSwapStatus,
+  runMakerNextStep
 }
