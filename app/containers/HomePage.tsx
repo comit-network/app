@@ -13,10 +13,10 @@ type Props = {
 };
 
 export default function HomePage(props: Props) {
-  const [rate, setRate] = useState('Loading...');
   const [maker, setMaker] = useState({});
   const [taker, setTaker] = useState({});
   const [swaps, setSwaps] = useState([]);
+  const [rate, setRate] = useState('Loading...');
 
   useEffect(() => {
     async function fetchMaker() {
@@ -25,15 +25,6 @@ export default function HomePage(props: Props) {
       setMaker({ peerId, addressHint, ETHAddress, BTCAddress });
     }
     fetchMaker();
-  }, []);
-
-  useEffect(() => {
-    async function fetchSwaps() {
-      const res = await fetch(`${MAKER_URL}/swaps`);
-      const { swaps: allSwaps } = await res.json();
-      setSwaps(allSwaps);
-    }
-    fetchSwaps();
   }, []);
 
   useEffect(() => {
@@ -51,6 +42,15 @@ export default function HomePage(props: Props) {
       });
     }
     fetchTaker();
+  }, []);
+
+  useEffect(() => {
+    async function fetchSwaps() {
+      const res = await fetch(`${MAKER_URL}/swaps`);
+      const { swaps: allSwaps } = await res.json();
+      setSwaps(allSwaps);
+    }
+    fetchSwaps();
   }, []);
 
   useEffect(() => {
