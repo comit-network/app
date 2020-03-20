@@ -13,10 +13,12 @@ import {
   Loader
 } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
-
 import routes from '../constants/routes.json';
+import { getTakerSwapStatus, runTakerNextStep } from '../utils/comit';
 
-// TODO: extract hook to utils
+const POLL_INTERVAL = 2000; // TODO: move to .env
+
+// TODO: extract useInterval hook to utils
 function useInterval(callback, delay) {
   const savedCallback = useRef();
 
@@ -50,19 +52,14 @@ export default function SwapDetailsPage() {
 
   useInterval(() => {
     async function pollSwap(swapId) {
-      // TODO: add MAKER_URL to application-level .env
-      const res = await fetch(`http://localhost:3000/swaps/${swapId}`);
-      const { swap: s } = await res.json();
       console.log('poll');
-      console.log(s);
+      const status = await getTakerSwapStatus(swapId);
+      console.log(status);
 
-      // TODO: call getTakerSwapStatus()
-      // TODO: call getTakerNextStep()
+      // TODO: call await runTakerNextStep(swapId)
     }
     pollSwap(id);
-  }, 2000); // Poll every 2 seconds
-
-  // TODO: useEffect to get /swaps:id
+  }, POLL_INTERVAL); // Poll every 2 seconds
 
   return (
     <Box>

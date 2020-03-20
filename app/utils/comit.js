@@ -81,7 +81,7 @@ export async function getTakerSwapStatus(swapId) {
   return 'DONE';
 }
 
-export async function getTakerNextStep(swapId) {
+export async function runTakerNextStep(swapId) {
   const taker = await getTaker();
   const takerSwapHandle = await taker.comitClient.retrieveSwapById(swapId);
 
@@ -91,14 +91,15 @@ export async function getTakerNextStep(swapId) {
     TAKER_LEDGER_DEPLOYED: takerSwapHandle.fund(tryParams), // results in TAKER_LEDGER_FUNDED
     MAKER_LEDGER_FUNDED: takerSwapHandle.redeem(tryParams), // results in TAKER_LEDGER_REDEEMED
     MAKER_LEDGER_REDEEMED: () => {
-      return true;
+      return true; // noop
     },
     DONE: () => {
-      return true;
+      return true; // noop
     } // Let user know that swap is done
   };
   const swapStatus = await getTakerSwapStatus(swapId);
-  return TAKER_SWAP_STATE_MACHINE[swapStatus];
+  const result = await TAKER_SWAP_STATE_MACHINE[swapStatus];
+  return result;
 }
 
 export function loadEnvironment() {
