@@ -1,22 +1,12 @@
 import _ from 'lodash';
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import {
-  Tooltip,
-  Card,
-  Box,
-  Icon,
-  Text,
-  Heading,
-  Button,
-  Flex,
-  Loader
-} from 'rimble-ui';
+import { Card, Box, Text, Heading, Button, Flex, Loader } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
-import { getTakerSwapStatus, runTakerNextStep } from '../utils/comit';
+import { runTakerNextStep } from '../utils/comit';
 
-const POLL_INTERVAL = 2000; // TODO: move to .env
+const POLL_INTERVAL = 5000; // TODO: move to .env
 
 // TODO: extract useInterval hook to utils
 function useInterval(callback, delay) {
@@ -43,6 +33,7 @@ export default function SwapDetailsPage() {
   useEffect(() => {
     async function fetchSwap(swapId) {
       // TODO: add MAKER_URL to application-level .env
+      // TODO: refactor with taker.comitClient.retrieveSwapById(swapId) ?
       const res = await fetch(`http://localhost:3000/swaps/${swapId}`);
       const { swap: s } = await res.json();
       setSwap(s);
@@ -51,17 +42,20 @@ export default function SwapDetailsPage() {
   }, []);
 
   useInterval(() => {
+    async function fetchSwap(swapId) {
+      // TODO: add MAKER_URL to application-level .env
+      // TODO: refactor with taker.comitClient.retrieveSwapById(swapId) ?
+      const res = await fetch(`http://localhost:3000/swaps/${swapId}`);
+      const { swap: s } = await res.json();
+      setSwap(s);
+    }
     async function pollSwap(swapId) {
-      console.log('poll');
-      const status = await getTakerSwapStatus(swapId);
-      console.log(status);
-
-      // const result = await runTakerNextStep(swapId);
-      // console.log(result);
-      // console.log('ran completed');
+      console.log('runTakerNextStep');
+      await runTakerNextStep(swapId);
+      await fetchSwap(swapId);
     }
     pollSwap(id);
-  }, POLL_INTERVAL); // Poll every 2 seconds
+  }, POLL_INTERVAL); // Poll every 5 seconds
 
   return (
     <Box>
@@ -155,49 +149,6 @@ export default function SwapDetailsPage() {
           </Flex>
           <Flex
             justifyContent="space-between"
-            bg="light-gray"
-            p={[2, 3]}
-            borderBottom="1px solid gray"
-            borderColor="moon-gray"
-            flexDirection={['column', 'row']}
-          >
-            <Text
-              textAlign={['center', 'left']}
-              color="near-black"
-              fontWeight="bold"
-            >
-              Deploy tx successful
-            </Text>
-            <a
-              href={`https://rinkeby.etherscan.io/address/${'TODO'}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Tooltip message="0xAc03BB73b6a9e108530AFf4Df5077c2B3D481e5A">
-                <Flex
-                  justifyContent={['center', 'auto']}
-                  alignItems="center"
-                  flexDirection="row-reverse"
-                >
-                  <Text fontWeight="bold">0xAc03...1e5A</Text>
-                  <Flex
-                    mr={2}
-                    p={1}
-                    borderRadius="50%"
-                    bg="primary-extra-light"
-                    height="2em"
-                    width="2em"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <Icon color="primary" name="RemoveRedEye" size="1em" />
-                  </Flex>
-                </Flex>
-              </Tooltip>
-            </a>
-          </Flex>
-          <Flex
-            justifyContent="space-between"
             bg="near-white"
             p={[2, 3]}
             alignItems="center"
@@ -218,9 +169,39 @@ export default function SwapDetailsPage() {
             flexDirection={['column', 'row']}
           >
             <Text color="near-black" fontWeight="bold">
-              Expires in
+              Alpha ledger
             </Text>
-            <Text color="mid-gray">Less than 2 minutes</Text>
+            <Text color="mid-gray">
+              {_.get(swap, 'state.alpha_ledger.status')}
+            </Text>
+          </Flex>
+          <Flex
+            justifyContent="space-between"
+            bg="near-white"
+            p={[2, 3]}
+            alignItems="center"
+            flexDirection={['column', 'row']}
+          >
+            <Text color="near-black" fontWeight="bold">
+              Beta ledger
+            </Text>
+            <Text color="mid-gray">
+              {_.get(swap, 'state.beta_ledger.status')}
+            </Text>
+          </Flex>
+          <Flex
+            justifyContent="space-between"
+            bg="near-white"
+            p={[2, 3]}
+            alignItems="center"
+            flexDirection={['column', 'row']}
+          >
+            <Text color="near-black" fontWeight="bold">
+              Communication
+            </Text>
+            <Text color="mid-gray">
+              {_.get(swap, 'state.communication.status')}
+            </Text>
           </Flex>
         </Flex>
       </Card>

@@ -33,20 +33,12 @@ export async function getTaker() {
 }
 
 async function parseProperties(swap) {
-  const details = await swap.fetchDetails();
-  const { properties } = details;
+  const { properties } = await swap.fetchDetails();
   return properties;
 }
 
-async function findSwapById(swapId) {
-  const taker = await getTaker();
-  const s = await taker.comitClient.retrieveSwapById(swapId);
-  const properties = await parseProperties(s);
-  return properties;
-}
-
-export async function getTakerSwapStatus(swapId) {
-  const { state } = await findSwapById(swapId);
+export function parseTakerSwapStatus(swapProperties) {
+  const { state } = swapProperties;
 
   const MAKER_ACCEPTED =
     state.communication.status === 'ACCEPTED' &&
@@ -82,14 +74,19 @@ export async function getTakerSwapStatus(swapId) {
 }
 
 export async function runTakerNextStep(swapId) {
+  console.log('runTakerNextStep');
   const taker = await getTaker();
-  const takerSwapHandle = await taker.comitClient.retrieveSwapById(swapId);
+  const swap = await taker.comitClient.retrieveSwapById(swapId);
+  const properties = await parseProperties(swap);
 
-  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
+  console.log('parseTakerSwapStatus');
+  const swapStatus = parseTakerSwapStatus(properties);
+  console.log(swapStatus);
+
   const TAKER_SWAP_STATE_MACHINE = {
-    MAKER_ACCEPTED: takerSwapHandle.deploy(tryParams), // results in TAKER_LEDGER_FUNDED
-    TAKER_LEDGER_DEPLOYED: takerSwapHandle.fund(tryParams), // results in TAKER_LEDGER_FUNDED
-    MAKER_LEDGER_FUNDED: takerSwapHandle.redeem(tryParams), // results in TAKER_LEDGER_REDEEMED
+    MAKER_ACCEPTED: swap.deploy, // results in TAKER_LEDGER_FUNDED
+    TAKER_LEDGER_DEPLOYED: swap.fund, // results in TAKER_LEDGER_FUNDED
+    MAKER_LEDGER_FUNDED: swap.redeem, // results in TAKER_LEDGER_REDEEMED
     MAKER_LEDGER_REDEEMED: () => {
       return true; // noop
     },
@@ -97,8 +94,11 @@ export async function runTakerNextStep(swapId) {
       return true; // noop
     } // Let user know that swap is done
   };
-  const swapStatus = await getTakerSwapStatus(swapId);
-  const result = await TAKER_SWAP_STATE_MACHINE[swapStatus];
+
+  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
+  console.log('Executing next step...');
+  const result = await TAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
+  console.log('Next step executed');
   return result;
 }
 
