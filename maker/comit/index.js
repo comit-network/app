@@ -77,18 +77,18 @@ async function runMakerNextStep(swapId) {
   const swapStatus = await parseMakerSwapStatus(properties);
   console.log(swapStatus);
 
+  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 }; // TODO: HARDCODED
   const MAKER_SWAP_STATE_MACHINE = {
-    'TAKER_SENT': swap.accept, // results in MAKER_ACCEPTED
-    'TAKER_LEDGER_FUNDED': swap.fund, // results in MAKER_LEDGER_FUNDED
-    'TAKER_LEDGER_REDEEMED': swap.redeem, // results in MAKER_LEDGER_REDEEMED
+    'TAKER_SENT': swap.accept(tryParams), // results in MAKER_ACCEPTED
+    'TAKER_LEDGER_FUNDED': swap.fund(tryParams), // results in MAKER_LEDGER_FUNDED
+    'TAKER_LEDGER_REDEEMED': swap.redeem(tryParams), // results in MAKER_LEDGER_REDEEMED
     'DONE': () => {
       return true;
     },
   }
 
   // 2. Execute next step
-  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 }; // TODO: HARDCODED
-  const result = await MAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
+  const result = await MAKER_SWAP_STATE_MACHINE[swapStatus];
   return result;
 }
 
