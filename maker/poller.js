@@ -8,16 +8,14 @@ const {
 
 const sleep = m => new Promise(r => setTimeout(r, m))
 const pollForever = async (collection, ms) => {
-  console.log('getSwaps()');
   const swaps = await getSwaps(); // Get all swaps
 
-  console.log('checking status of swaps')
+  console.log(`== checking status of ${swaps.length} swaps`)
   for (let swap of swaps) {
-    const status = parseMakerSwapStatus(swap); // This part is optional, part of runMakerNextStep()
     console.log(swap.id);
-    console.log(status);
-
-    // await runMakerNextStep(swap.id)
+    // const status = parseMakerSwapStatus(swap); // This part is optional, part of runMakerNextStep()
+    // console.log(status);
+    await runMakerNextStep(swap.id);
   }
 
   // Wait X ms Before Processing Continues

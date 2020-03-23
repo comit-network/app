@@ -12,22 +12,26 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-async function parseProperties(swaps) {
-  const details = await Promise.all(_.map(swaps, s => s.fetchDetails()));
-  const properties = _.map(details, s => s['properties']);
+async function parsePropertiesList(swaps) {
+  const details = await Promise.all(_.map(swaps, s => parseProperties(s)));
+  return properties
+}
+
+async function parseProperties(swap) {
+  const { properties } = await swap.fetchDetails();
   return properties
 }
 
 async function getSwaps() {
   const maker = await getMaker();
   const newSwaps = await maker.comitClient.getNewSwaps();
-  const newSwapsProperties = await parseProperties(newSwaps);
+  const newSwapsProperties = await parsePropertiesList(newSwaps);
 
   const ongoingSwaps = await maker.comitClient.getOngoingSwaps();
-  const ongoingSwapsProperties = await parseProperties(ongoingSwaps);
+  const ongoingSwapsProperties = await parsePropertiesList(ongoingSwaps);
 
   const doneSwaps = await maker.comitClient.getDoneSwaps();
-  const doneSwapsProperties = await await parseProperties(doneSwaps);
+  const doneSwapsProperties = await await parsePropertiesList(doneSwaps);
 
   return [...newSwapsProperties, ...ongoingSwapsProperties, ...doneSwapsProperties];
 }
@@ -35,12 +39,14 @@ async function getSwaps() {
 async function findSwapById(swapId) {
   const maker = await getMaker();
   const s = await maker.comitClient.retrieveSwapById(swapId);
-  const properties = await parseProperties([s]);
-  return properties[0];
+  const properties = await parseProperties(s);
+  return properties;
 }
 
 function parseMakerSwapStatus(swapProperties) {
+  console.log('parseMakerSwapStatus');
   const { state } = swapProperties;
+  console.log(swapProperties);
 
   const TAKER_SENT = (state.communication.status === 'SENT' && state.alpha_ledger.status === 'NOT_DEPLOYED' && state.beta_ledger.status === 'NOT_DEPLOYED');
   if (TAKER_SENT) {
@@ -63,19 +69,20 @@ function parseMakerSwapStatus(swapProperties) {
 
 async function runMakerNextStep(swapId) {
   const maker = await getMaker();
-  const makerSwapHandle = await maker.comitClient.retrieveSwapById(swapId);
+  const swap = await maker.comitClient.retrieveSwapById(swapId);
+  const properties = await parseProperties(swap);
 
-  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
   const MAKER_SWAP_STATE_MACHINE = {
-    'TAKER_SENT': makerSwapHandle.accept(tryParams), // results in MAKER_ACCEPTED
-    'TAKER_LEDGER_FUNDED': makerSwapHandle.fund(tryParams), // results in MAKER_LEDGER_FUNDED
-    'TAKER_LEDGER_REDEEMED': makerSwapHandle.redeem(tryParams), // results in MAKER_LEDGER_REDEEMED
+    'TAKER_SENT': swap.accept, // results in MAKER_ACCEPTED
+    'TAKER_LEDGER_FUNDED': swap.fund, // results in MAKER_LEDGER_FUNDED
+    'TAKER_LEDGER_REDEEMED': swap.redeem, // results in MAKER_LEDGER_REDEEMED
     'DONE': () => {
       return true;
     },
   }
-  const swapStatus = await parseMakerSwapStatus(swapId);
-  const result = await MAKER_SWAP_STATE_MACHINE[swapStatus];
+  const swapStatus = await parseMakerSwapStatus(properties); // TODO: refactor parseProperties for 1 item only
+  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 }; // TODO: HARDCODED
+  const result = await MAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
   return result;
 }
 
