@@ -56,7 +56,9 @@ export default function SwapDetailsPage() {
       const status = await getTakerSwapStatus(swapId);
       console.log(status);
 
-      // TODO: call await runTakerNextStep(swapId)
+      // const result = await runTakerNextStep(swapId);
+      // console.log(result);
+      // console.log('ran completed');
     }
     pollSwap(id);
   }, POLL_INTERVAL); // Poll every 2 seconds
