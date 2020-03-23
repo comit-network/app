@@ -13,8 +13,6 @@ const pollForever = async (collection, ms) => {
   console.log(`== checking status of ${swaps.length} swaps`)
   for (let swap of swaps) {
     console.log(swap.id);
-    // const status = parseMakerSwapStatus(swap); // This part is optional, part of runMakerNextStep()
-    // console.log(status);
     await runMakerNextStep(swap.id);
   }
 

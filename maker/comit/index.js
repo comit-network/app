@@ -73,6 +73,10 @@ async function runMakerNextStep(swapId) {
   const swap = await maker.comitClient.retrieveSwapById(swapId);
   const properties = await parseProperties(swap);
 
+  // 1. Get current status
+  const swapStatus = await parseMakerSwapStatus(properties);
+  console.log(swapStatus);
+
   const MAKER_SWAP_STATE_MACHINE = {
     'TAKER_SENT': swap.accept, // results in MAKER_ACCEPTED
     'TAKER_LEDGER_FUNDED': swap.fund, // results in MAKER_LEDGER_FUNDED
@@ -81,8 +85,8 @@ async function runMakerNextStep(swapId) {
       return true;
     },
   }
-  const swapStatus = await parseMakerSwapStatus(properties);
-  console.log(swapStatus);
+
+  // 2. Execute next step
   const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 }; // TODO: HARDCODED
   const result = await MAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
   return result;
