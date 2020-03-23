@@ -42,6 +42,8 @@ export default function SwapDetailsPage() {
   }, []);
 
   useInterval(() => {
+    // TODO: do nothing if a transaction is already sent out not too long ago
+
     async function fetchSwap(swapId) {
       // TODO: add MAKER_URL to application-level .env
       // TODO: refactor with taker.comitClient.retrieveSwapById(swapId) ?

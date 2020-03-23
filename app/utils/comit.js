@@ -83,10 +83,11 @@ export async function runTakerNextStep(swapId) {
   const swapStatus = parseTakerSwapStatus(properties);
   console.log(swapStatus);
 
+  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
   const TAKER_SWAP_STATE_MACHINE = {
-    MAKER_ACCEPTED: swap.deploy, // results in TAKER_LEDGER_FUNDED
-    TAKER_LEDGER_DEPLOYED: swap.fund, // results in TAKER_LEDGER_FUNDED
-    MAKER_LEDGER_FUNDED: swap.redeem, // results in TAKER_LEDGER_REDEEMED
+    MAKER_ACCEPTED: swap.deploy(tryParams), // results in TAKER_LEDGER_FUNDED
+    TAKER_LEDGER_DEPLOYED: swap.fund(tryParams), // results in TAKER_LEDGER_FUNDED
+    MAKER_LEDGER_FUNDED: swap.redeem(tryParams), // results in TAKER_LEDGER_REDEEMED
     MAKER_LEDGER_REDEEMED: () => {
       return true; // noop
     },
@@ -95,11 +96,12 @@ export async function runTakerNextStep(swapId) {
     } // Let user know that swap is done
   };
 
-  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
   console.log('Executing next step...');
-  const result = await TAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
+  await TAKER_SWAP_STATE_MACHINE[swapStatus];
+
+  // TOFIX:  Error: Transaction with the same hash was already imported.
+
   console.log('Next step executed');
-  return result;
 }
 
 export function loadEnvironment() {
