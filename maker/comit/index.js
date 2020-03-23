@@ -13,8 +13,8 @@ const os = require("os");
 const path = require("path");
 
 async function parsePropertiesList(swaps) {
-  const details = await Promise.all(_.map(swaps, s => parseProperties(s)));
-  return properties
+  const properties = await Promise.all(_.map(swaps, s => parseProperties(s)));
+  return properties;
 }
 
 async function parseProperties(swap) {
@@ -68,6 +68,7 @@ function parseMakerSwapStatus(swapProperties) {
 }
 
 async function runMakerNextStep(swapId) {
+  console.log('runMakerNextStep');
   const maker = await getMaker();
   const swap = await maker.comitClient.retrieveSwapById(swapId);
   const properties = await parseProperties(swap);
@@ -80,7 +81,8 @@ async function runMakerNextStep(swapId) {
       return true;
     },
   }
-  const swapStatus = await parseMakerSwapStatus(properties); // TODO: refactor parseProperties for 1 item only
+  const swapStatus = await parseMakerSwapStatus(properties);
+  console.log(swapStatus);
   const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 }; // TODO: HARDCODED
   const result = await MAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
   return result;
