@@ -37,11 +37,10 @@ export default function SwapDetailsPage() {
       await runTakerNextStep(swapId);
       await fetchSwap(swapId);
     }
-    if (
+    const swapNotDone =
       _.get(swap, 'status') === 'NEW' ||
-      _.get(swap, 'status') === 'IN_PROGRESS'
-    ) {
-      // Don't poll if already done
+      _.get(swap, 'status') === 'IN_PROGRESS';
+    if (swapNotDone) {
       pollSwap(id);
     }
   }, POLL_INTERVAL); // Poll every 5 seconds
@@ -92,10 +91,9 @@ export default function SwapDetailsPage() {
                 fontWeight="bold"
                 lineHeight="1em"
               >
-                You{' '}
                 {_.get(swap, 'status') === 'SWAPPED'
-                  ? 'have received '
-                  : 'will receive '}
+                  ? 'You have received '
+                  : 'You will receive '}
                 {swap
                   ? toBitcoin(_.get(swap, 'parameters.beta_asset.quantity'))
                   : '...'}{' '}
