@@ -33,7 +33,7 @@ export async function getTaker() {
   return taker;
 }
 
-async function parseProperties(swap) {
+export async function parseProperties(swap) {
   const { properties } = await swap.fetchDetails();
   return properties;
 }

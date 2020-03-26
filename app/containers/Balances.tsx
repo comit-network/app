@@ -22,8 +22,8 @@ export default function Balances() {
         process.env.ERC20_CONTRACT_ADDRESS
       );
       setETHBalance(parseFloat(formatEther(ethBalance)));
+      setDAIBalance(erc20Balance.toFixed(2));
       setBTCBalance(bitcoinBalance.toFixed(2));
-      setDAIBalance(erc20Balance.toNumber());
     }
     fetchBalances();
   }, []);

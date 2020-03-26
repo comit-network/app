@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Card, Box, Text, Heading, Button, Flex, Loader } from 'rimble-ui';
+import { Card, Box, Text, Heading, Button, Flex } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
-import { runTakerNextStep } from '../utils/comit';
+import { getTaker, parseProperties, runTakerNextStep } from '../utils/comit';
 import useInterval from '../utils/useInterval';
 import SwapLoader from '../components/SwapLoader';
 
@@ -16,22 +16,20 @@ export default function SwapDetailsPage() {
 
   useEffect(() => {
     async function fetchSwap(swapId) {
-      // TODO: add MAKER_URL to application-level .env
-      // TODO: refactor with taker.comitClient.retrieveSwapById(swapId) ?
-      const res = await fetch(`http://localhost:3000/swaps/${swapId}`);
-      const { swap: s } = await res.json();
-      setSwap(s);
+      const t = await getTaker();
+      const s = await t.comitClient.retrieveSwapById(swapId);
+      const properties = await parseProperties(s);
+      setSwap(properties);
     }
     fetchSwap(id);
   }, []);
 
   useInterval(() => {
     async function fetchSwap(swapId) {
-      // TODO: add MAKER_URL to application-level .env
-      // TODO: refactor with taker.comitClient.retrieveSwapById(swapId) ?
-      const res = await fetch(`http://localhost:3000/swaps/${swapId}`);
-      const { swap: s } = await res.json();
-      setSwap(s);
+      const t = await getTaker();
+      const s = await t.comitClient.retrieveSwapById(swapId);
+      const properties = await parseProperties(s);
+      setSwap(properties);
     }
     async function pollSwap(swapId) {
       await runTakerNextStep(swapId);
