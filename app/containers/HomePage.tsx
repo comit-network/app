@@ -17,22 +17,19 @@ export default function HomePage(props: Props) {
   const [maker, setMaker] = useState({});
   const [taker, setTaker] = useState({});
   const [swaps, setSwaps] = useState([]);
-  const [BTCBalance, setBTCBalance] = useState(0);
-  const [DAIBalance, setDAIBalance] = useState(0);
+  const [BTCBalance, setBTCBalance] = useState('...');
+  const [DAIBalance, setDAIBalance] = useState('...');
   const [rate, setRate] = useState('Loading...');
 
   useEffect(() => {
     async function fetchBalances() {
-      console.log('fetchBalances');
       const t = await getTaker();
       const bitcoinBalance = await t.bitcoinWallet.getBalance();
       const erc20Balance = await t.ethereumWallet.getErc20Balance(
         process.env.ERC20_CONTRACT_ADDRESS
       );
       setBTCBalance(bitcoinBalance);
-      console.log(BTCBalance);
       setDAIBalance(erc20Balance.toNumber());
-      console.log(DAIBalance);
     }
     fetchBalances();
   }, []);
