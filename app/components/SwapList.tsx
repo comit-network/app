@@ -31,6 +31,10 @@ export default function SwapList(props: Props) {
     </tr>
   ));
 
+  if (rows.length <= 0) {
+    return null;
+  }
+
   return (
     <Box>
       <Text
@@ -53,7 +57,7 @@ export default function SwapList(props: Props) {
             <th>Details</th>
           </tr>
         </thead>
-        <tbody>{rows.length > 0 ? rows : <Text m={2}>Nothing yet</Text>}</tbody>
+        <tbody>{rows}</tbody>
       </Table>
     </Box>
   );
