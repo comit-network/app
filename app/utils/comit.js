@@ -85,19 +85,29 @@ export async function runTakerNextStep(swapId) {
 
   const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
   const TAKER_SWAP_STATE_MACHINE = {
-    MAKER_ACCEPTED: swap.deploy(tryParams), // results in TAKER_LEDGER_FUNDED
-    TAKER_LEDGER_DEPLOYED: swap.fund(tryParams), // results in TAKER_LEDGER_FUNDED
-    MAKER_LEDGER_FUNDED: swap.redeem(tryParams), // results in TAKER_LEDGER_REDEEMED
-    MAKER_LEDGER_REDEEMED: () => {
+    MAKER_ACCEPTED: async params => {
+      console.log('running swap.deploy');
+      await swap.deploy(params);
+    }, // results in TAKER_LEDGER_FUNDED
+    TAKER_LEDGER_DEPLOYED: async params => {
+      console.log('running swap.fund');
+      // TOFIX: this.tryExecuteSirenAction is not a function
+      await swap.fund(params);
+    }, // results in TAKER_LEDGER_FUNDED
+    MAKER_LEDGER_FUNDED: async params => {
+      console.log('running swap.redeem');
+      await swap.redeem(params);
+    }, // results in TAKER_LEDGER_REDEEMED
+    MAKER_LEDGER_REDEEMED: async () => {
       return true; // noop
     },
-    DONE: () => {
+    DONE: async () => {
       return true; // noop
     } // Let user know that swap is done
   };
 
   console.log('Executing next step...');
-  await TAKER_SWAP_STATE_MACHINE[swapStatus];
+  await TAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
 
   // TOFIX:  Error: Transaction with the same hash was already imported.
 

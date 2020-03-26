@@ -52,7 +52,6 @@ export default function SwapDetailsPage() {
       setSwap(s);
     }
     async function pollSwap(swapId) {
-      console.log('runTakerNextStep');
       await runTakerNextStep(swapId);
       await fetchSwap(swapId);
     }
