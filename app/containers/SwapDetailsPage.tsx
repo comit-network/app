@@ -133,7 +133,7 @@ export default function SwapDetailsPage() {
             flexDirection={['column', 'row']}
           >
             <Text color="near-black" fontWeight="bold">
-              Alpha ledger
+              Your ledger
             </Text>
             <Text color="mid-gray">
               {_.get(swap, 'state.alpha_ledger.status')}
@@ -147,7 +147,7 @@ export default function SwapDetailsPage() {
             flexDirection={['column', 'row']}
           >
             <Text color="near-black" fontWeight="bold">
-              Beta ledger
+              Maker ledger
             </Text>
             <Text color="mid-gray">
               {_.get(swap, 'state.beta_ledger.status')}
