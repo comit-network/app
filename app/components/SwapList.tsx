@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
-import { Box, Heading, Table, Pill, Button } from 'rimble-ui';
+import { Box, Icon, Text, Table, Pill, Button } from 'rimble-ui';
 import { Link } from 'react-router-dom';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
@@ -33,7 +33,17 @@ export default function SwapList(props: Props) {
 
   return (
     <Box>
-      <Heading as="h3">My Swaps</Heading>
+      <Text
+        caps
+        fontSize={0}
+        fontWeight={4}
+        mt={3}
+        display="flex"
+        alignItems="center"
+      >
+        <Icon name="SwapHoriz" mr={2} />
+        My Swaps
+      </Text>
       <br />
       <Table>
         <thead>

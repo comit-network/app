@@ -46,7 +46,6 @@ async function findSwapById(swapId) {
 function parseMakerSwapStatus(swapProperties) {
   console.log('parseMakerSwapStatus');
   const { state } = swapProperties;
-  console.log(swapProperties);
 
   const TAKER_SENT = (state.communication.status === 'SENT' && state.alpha_ledger.status === 'NOT_DEPLOYED' && state.beta_ledger.status === 'NOT_DEPLOYED');
   if (TAKER_SENT) {
