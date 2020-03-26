@@ -8,6 +8,33 @@ import { runTakerNextStep } from '../utils/comit';
 
 const POLL_INTERVAL = 5000; // TODO: move to .env
 
+// TODO: refactor to component
+const loader = (
+  <Flex
+    p={3}
+    borderBottom="1px solid gray"
+    borderColor="moon-gray"
+    alignItems="center"
+    flexDirection={['column', 'row']}
+  >
+    <Box position="relative" height="2em" width="2em" mr={[0, 3]} mb={[3, 0]}>
+      <Box position="absolute" top="0" left="0">
+        <Loader size="2em" />
+      </Box>
+    </Box>
+    <Box>
+      <Text
+        textAlign={['center', 'left']}
+        fontWeight="600"
+        fontSize={1}
+        lineHeight="1.25em"
+      >
+        Waiting for confirmation...
+      </Text>
+    </Box>
+  </Flex>
+);
+
 // TODO: extract useInterval hook to utils
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -55,7 +82,10 @@ export default function SwapDetailsPage() {
       await runTakerNextStep(swapId);
       await fetchSwap(swapId);
     }
-    pollSwap(id);
+    if (!_.get(swap, 'status') === 'SWAPPED') {
+      // Don't poll if already done
+      pollSwap(id);
+    }
   }, POLL_INTERVAL); // Poll every 5 seconds
 
   return (
@@ -76,35 +106,7 @@ export default function SwapDetailsPage() {
           <Box bg="primary" px={3} py={2}>
             <Text color="white">Swap {_.get(swap, 'status')}</Text>
           </Box>
-          <Flex
-            p={3}
-            borderBottom="1px solid gray"
-            borderColor="moon-gray"
-            alignItems="center"
-            flexDirection={['column', 'row']}
-          >
-            <Box
-              position="relative"
-              height="2em"
-              width="2em"
-              mr={[0, 3]}
-              mb={[3, 0]}
-            >
-              <Box position="absolute" top="0" left="0">
-                <Loader size="2em" />
-              </Box>
-            </Box>
-            <Box>
-              <Text
-                textAlign={['center', 'left']}
-                fontWeight="600"
-                fontSize={1}
-                lineHeight="1.25em"
-              >
-                Waiting for confirmation...
-              </Text>
-            </Box>
-          </Flex>
+          {_.get(swap, 'status') === 'SWAPPED' ? null : loader}
           <Flex
             justifyContent="space-between"
             bg="near-white"
@@ -132,7 +134,10 @@ export default function SwapDetailsPage() {
                 fontWeight="bold"
                 lineHeight="1em"
               >
-                You will receive{' '}
+                You{' '}
+                {_.get(swap, 'status') === 'SWAPPED'
+                  ? 'have received '
+                  : 'will receive '}
                 {swap
                   ? toBitcoin(_.get(swap, 'parameters.beta_asset.quantity'))
                   : '...'}{' '}

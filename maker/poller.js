@@ -10,6 +10,10 @@ const {
 
 const fetchBalances = async () => {
   const m = await getMaker();
+
+  // Wait a second to let the Ethereum wallet catch up??
+  await new Promise(r => setTimeout(r, 1000));
+
   const bitcoinBalance = await m.bitcoinWallet.getBalance();
   const erc20Balance = await m.ethereumWallet.getErc20Balance(
     process.env.ERC20_CONTRACT_ADDRESS

@@ -13,6 +13,7 @@ export async function getNode(index, name) {
     process.env.BITCOIN_P2P_URI,
     process.env[`BITCOIN_HD_KEY_${index}`]
   );
+  await new Promise(resolve => setTimeout(resolve, 1000)); // TODO: why is this here
 
   const ethereumWallet = new EthereumWallet(
     process.env.ETHEREUM_NODE_HTTP_URL,
@@ -83,7 +84,6 @@ export async function runTakerNextStep(swapId) {
   const swapStatus = parseTakerSwapStatus(properties);
   console.log(swapStatus);
 
-  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
   const TAKER_SWAP_STATE_MACHINE = {
     MAKER_ACCEPTED: async params => {
       console.log('running swap.deploy');
@@ -91,7 +91,6 @@ export async function runTakerNextStep(swapId) {
     }, // results in TAKER_LEDGER_FUNDED
     TAKER_LEDGER_DEPLOYED: async params => {
       console.log('running swap.fund');
-      // TOFIX: this.tryExecuteSirenAction is not a function
       await swap.fund(params);
     }, // results in TAKER_LEDGER_FUNDED
     MAKER_LEDGER_FUNDED: async params => {
@@ -107,10 +106,8 @@ export async function runTakerNextStep(swapId) {
   };
 
   console.log('Executing next step...');
+  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
   await TAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
-
-  // TOFIX:  Error: Transaction with the same hash was already imported.
-
   console.log('Next step executed');
 }
 
