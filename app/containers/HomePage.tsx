@@ -24,6 +24,10 @@ export default function HomePage(props: Props) {
   useEffect(() => {
     async function fetchBalances() {
       const t = await getTaker();
+
+      // TOFIX: For some reason the following line is needed for bitcoin balance to be displayed correctly
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       const bitcoinBalance = await t.bitcoinWallet.getBalance();
       const erc20Balance = await t.ethereumWallet.getErc20Balance(
         process.env.ERC20_CONTRACT_ADDRESS

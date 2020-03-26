@@ -33,7 +33,12 @@ async function getSwaps() {
   const doneSwaps = await maker.comitClient.getDoneSwaps();
   const doneSwapsProperties = await await parsePropertiesList(doneSwaps);
 
-  return [...newSwapsProperties, ...ongoingSwapsProperties, ...doneSwapsProperties];
+  // return [...newSwapsProperties, ...ongoingSwapsProperties, ...doneSwapsProperties];
+  return {
+    new: newSwapsProperties,
+    ongoing: ongoingSwapsProperties,
+    done: doneSwapsProperties
+  }
 }
 
 async function findSwapById(swapId) {
@@ -76,19 +81,27 @@ async function runMakerNextStep(swapId) {
   const swapStatus = await parseMakerSwapStatus(properties);
   console.log(swapStatus);
 
-  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 }; // TODO: HARDCODED
   const MAKER_SWAP_STATE_MACHINE = {
-    'TAKER_SENT': swap.accept(tryParams), // results in MAKER_ACCEPTED
-    'TAKER_LEDGER_FUNDED': swap.fund(tryParams), // results in MAKER_LEDGER_FUNDED
-    'TAKER_LEDGER_REDEEMED': swap.redeem(tryParams), // results in MAKER_LEDGER_REDEEMED
-    'DONE': () => {
+    'TAKER_SENT': async params => {
+      console.log('running swap.accept');
+      await swap.accept(params);
+    }, // results in MAKER_ACCEPTED
+    'TAKER_LEDGER_FUNDED': async params => {
+      console.log('running swap.fund');
+      await swap.fund(params);
+    }, // results in MAKER_LEDGER_FUNDED
+    'TAKER_LEDGER_REDEEMED': async params => {
+      console.log('running swap.redeem');
+      await swap.redeem(params);
+    }, // results in MAKER_LEDGER_REDEEMED
+    'DONE': async () => {
       return true;
     },
   }
 
   // 2. Execute next step
-  const result = await MAKER_SWAP_STATE_MACHINE[swapStatus];
-  return result;
+  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 }; // TODO: HARDCODED
+  await MAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
 }
 
 function loadEnvironment() {
@@ -117,7 +130,7 @@ async function getNode(index, name) {
     process.env.BITCOIN_P2P_URI,
     process.env[`BITCOIN_HD_KEY_${index}`]
   );
-  await new Promise(r => setTimeout(r, 1000)); // TODO: why is this here
+  await new Promise(resolve => setTimeout(resolve, 1000)); // TODO: why is this here
 
   const ethereumWallet = new EthereumWallet(
       process.env.ETHEREUM_NODE_HTTP_URL,
