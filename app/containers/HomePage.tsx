@@ -80,7 +80,7 @@ export default function HomePage(props: Props) {
       setRate(rates.dai.btc);
     }
     fetchRate();
-  }, []);
+  }); // TODO: useInterval instead?
 
   const onSwapSent = swapId => {
     // Redirect to track swap on new swap

@@ -1,10 +1,11 @@
 import _ from 'lodash';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, Box, Text, Heading, Button, Flex, Loader } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
 import { runTakerNextStep } from '../utils/comit';
+import useInterval from '../utils/useInterval';
 
 const POLL_INTERVAL = 5000; // TODO: move to .env
 
@@ -35,24 +36,6 @@ const loader = (
   </Flex>
 );
 
-// TODO: extract useInterval hook to utils
-function useInterval(callback, delay) {
-  const savedCallback = useRef();
-
-  useEffect(() => {
-    savedCallback.current = callback;
-  });
-
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-
-    let id = setInterval(tick, delay); // eslint-disable-line
-    return () => clearInterval(id);
-  }, [delay]);
-}
-
 export default function SwapDetailsPage() {
   const { id } = useParams();
   const [swap, setSwap] = useState();
@@ -69,8 +52,6 @@ export default function SwapDetailsPage() {
   }, []);
 
   useInterval(() => {
-    // TODO: do nothing if a transaction is already sent out not too long ago
-
     async function fetchSwap(swapId) {
       // TODO: add MAKER_URL to application-level .env
       // TODO: refactor with taker.comitClient.retrieveSwapById(swapId) ?
@@ -82,7 +63,10 @@ export default function SwapDetailsPage() {
       await runTakerNextStep(swapId);
       await fetchSwap(swapId);
     }
-    if (!_.get(swap, 'status') === 'SWAPPED') {
+    if (
+      _.get(swap, 'status') === 'NEW' ||
+      _.get(swap, 'status') === 'IN_PROGRESS'
+    ) {
       // Don't poll if already done
       pollSwap(id);
     }
