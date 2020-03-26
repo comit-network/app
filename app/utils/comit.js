@@ -106,8 +106,8 @@ export async function runTakerNextStep(swapId) {
   };
 
   console.log('Executing next step...');
-  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
-  await TAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
+  const TRY_PARAMS = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
+  await TAKER_SWAP_STATE_MACHINE[swapStatus](TRY_PARAMS);
   console.log('Next step executed');
 }
 
