@@ -6,35 +6,9 @@ import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
 import { runTakerNextStep } from '../utils/comit';
 import useInterval from '../utils/useInterval';
+import SwapLoader from '../components/SwapLoader';
 
 const POLL_INTERVAL = 5000; // TODO: move to .env
-
-// TODO: refactor to component
-const loader = (
-  <Flex
-    p={3}
-    borderBottom="1px solid gray"
-    borderColor="moon-gray"
-    alignItems="center"
-    flexDirection={['column', 'row']}
-  >
-    <Box position="relative" height="2em" width="2em" mr={[0, 3]} mb={[3, 0]}>
-      <Box position="absolute" top="0" left="0">
-        <Loader size="2em" />
-      </Box>
-    </Box>
-    <Box>
-      <Text
-        textAlign={['center', 'left']}
-        fontWeight="600"
-        fontSize={1}
-        lineHeight="1.25em"
-      >
-        Waiting for confirmation...
-      </Text>
-    </Box>
-  </Flex>
-);
 
 export default function SwapDetailsPage() {
   const { id } = useParams();
@@ -90,7 +64,7 @@ export default function SwapDetailsPage() {
           <Box bg="primary" px={3} py={2}>
             <Text color="white">Swap {_.get(swap, 'status')}</Text>
           </Box>
-          {_.get(swap, 'status') === 'SWAPPED' ? null : loader}
+          <SwapLoader status={_.get(swap, 'status')} />
           <Flex
             justifyContent="space-between"
             bg="near-white"
