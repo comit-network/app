@@ -1,8 +1,7 @@
 const {
   loadEnvironment,
-  getSwaps,
+  getPendingSwaps,
   findSwapById,
-  parseMakerSwapStatus, // optional
   runMakerNextStep,
   getMaker
 } = require('./comit');
@@ -23,11 +22,11 @@ const fetchBalances = async () => {
 
 const sleep = m => new Promise(r => setTimeout(r, m))
 const pollForever = async (collection, ms) => {
-  const swaps = await getSwaps(); // TODO: filter out and ignore DONE swaps
+  const swaps = await getPendingSwaps();
   const { btc, dai } = await fetchBalances();
 
   console.log(`BTC: ${btc} - DAI: ${dai}`);
-  console.log(`== checking status of ${swaps.length} swaps`)
+  console.log(`== checking status of ${swaps.length} pending swaps`)
   for (let swap of swaps) {
     console.log(swap.id);
     try {

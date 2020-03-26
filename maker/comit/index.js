@@ -33,12 +33,18 @@ async function getSwaps() {
   const doneSwaps = await maker.comitClient.getDoneSwaps();
   const doneSwapsProperties = await await parsePropertiesList(doneSwaps);
 
-  // return [...newSwapsProperties, ...ongoingSwapsProperties, ...doneSwapsProperties];
-  return {
-    new: newSwapsProperties,
-    ongoing: ongoingSwapsProperties,
-    done: doneSwapsProperties
-  }
+  return [...newSwapsProperties, ...ongoingSwapsProperties, ...doneSwapsProperties];
+}
+
+async function getPendingSwaps() { // Ignores Done
+  const maker = await getMaker();
+  const newSwaps = await maker.comitClient.getNewSwaps();
+  const newSwapsProperties = await parsePropertiesList(newSwaps);
+
+  const ongoingSwaps = await maker.comitClient.getOngoingSwaps();
+  const ongoingSwapsProperties = await parsePropertiesList(ongoingSwaps);
+
+  return [...newSwapsProperties, ...ongoingSwapsProperties];
 }
 
 async function findSwapById(swapId) {
@@ -150,6 +156,7 @@ module.exports = {
   getNode,
   getMaker,
   getSwaps,
+  getPendingSwaps,
   findSwapById,
   parseMakerSwapStatus,
   runMakerNextStep
