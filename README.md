@@ -47,10 +47,23 @@ $ cd maker
 $ yarn poll
 ```
 
+Both components can be run concurrently:
+
+```bash
+$ cd maker
+$ yarn dev:all
+```
+
 ## Running Taker App Locally
 
 ```bash
 $ yarn dev
+```
+
+You can run both Maker (+poller) and Taker concurrently:
+
+```bash
+$ yarn dev:all
 ```
 
 ## Packaging for Production
