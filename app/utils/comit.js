@@ -58,7 +58,8 @@ export function parseTakerSwapStatus(swapProperties) {
 
   const MAKER_LEDGER_FUNDED =
     state.alpha_ledger.status === 'FUNDED' &&
-    state.beta_ledger.status === 'FUNDED';
+    (state.beta_ledger.status === 'FUNDED' ||
+      state.beta_ledger.status === 'REDEEMED');
   if (MAKER_LEDGER_FUNDED) {
     return 'MAKER_LEDGER_FUNDED';
   }
