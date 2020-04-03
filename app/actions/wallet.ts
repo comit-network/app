@@ -5,7 +5,7 @@ interface SetBTCBalance {
   value: boolean;
 }
 
-export const SetBTCBalance = (value: number): SetBTCBalance => ({
+export const setBTCBalance = (value: number): SetBTCBalance => ({
   kind: 'setBTCBalance',
   value
 });
@@ -15,7 +15,7 @@ interface SetETHBalance {
   value: boolean;
 }
 
-export const SetETHBalance = (value: number): SetETHBalance => ({
+export const setETHBalance = (value: number): SetETHBalance => ({
   kind: 'setETHBalance',
   value
 });
@@ -25,7 +25,7 @@ interface SetDAIBalance {
   value: boolean;
 }
 
-export const SetDAIBalance = (value: number): SetDAIBalance => ({
+export const setDAIBalance = (value: number): SetDAIBalance => ({
   kind: 'setDAIBalance',
   value
 });
