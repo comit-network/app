@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { Action } from '../actions/wallet';
 
 interface State {
-  BTCBalance: number;
-  ETHBalance: number;
-  DAIBalance: number;
+  BTCBalance: number | undefined;
+  ETHBalance: number | undefined;
+  DAIBalance: number | undefined;
 }
 
 export const defaultState: State = {
@@ -15,6 +15,9 @@ export const defaultState: State = {
 };
 
 export function reducer(state = defaultState, action: Action): State {
+  console.log('reducer');
+  console.log(state);
+  console.log(action);
   switch (action.kind) {
     case 'setBTCBalance':
       return { ...state, BTCBalance: action.value };

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Text, Icon, Flex } from 'rimble-ui';
 import { Btc, Eth, Dai } from '@rimble/icons';
 import { formatEther } from 'ethers/utils';
 import { getTaker } from '../utils/comit';
+import { useWalletStore } from '../hooks/useWalletStore';
+import { setBTCBalance, setDAIBalance, setETHBalance } from '../actions/wallet';
 
 export default function Balances() {
-  const [BTCBalance, setBTCBalance] = useState('...');
-  const [ETHBalance, setETHBalance] = useState('...');
-  const [DAIBalance, setDAIBalance] = useState('...');
+  const { state, dispatch } = useWalletStore();
 
   useEffect(() => {
     async function fetchBalances() {
@@ -21,9 +21,9 @@ export default function Balances() {
       const erc20Balance = await t.ethereumWallet.getErc20Balance(
         process.env.ERC20_CONTRACT_ADDRESS
       );
-      setETHBalance(parseFloat(formatEther(ethBalance)));
-      setDAIBalance(erc20Balance.toFixed(2));
-      setBTCBalance(bitcoinBalance.toFixed(2));
+      dispatch(setETHBalance(parseFloat(formatEther(ethBalance))));
+      dispatch(setDAIBalance(erc20Balance.toNumber()));
+      dispatch(setBTCBalance(bitcoinBalance));
     }
     fetchBalances();
   }, []);
@@ -42,13 +42,13 @@ export default function Balances() {
         My Wallet
       </Text>
       <Text fontSize={2} mb={3} position="right" display="flex">
-        <Eth mr={2} /> ETH: {ETHBalance}
+        <Eth mr={2} /> ETH: {state.ETHBalance}
       </Text>
       <Text fontSize={2} mb={3} display="flex">
-        <Dai mr={2} /> DAI: {DAIBalance}
+        <Dai mr={2} /> DAI: {state.DAIBalance}
       </Text>
       <Text fontSize={2} mb={3} position="right" display="flex">
-        <Btc mr={2} /> BTC: {BTCBalance}
+        <Btc mr={2} /> BTC: {state.BTCBalance}
       </Text>
     </Flex>
   );
