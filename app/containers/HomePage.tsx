@@ -3,9 +3,10 @@ import { Box, Card, Heading } from 'rimble-ui';
 import { getTaker } from '../utils/comit';
 import SwapForm from './SwapForm';
 import SwapList from '../components/SwapList';
-import Balances from './Balances';
+import Wallet from './Wallet';
 
 // TODO: add MAKER_URL to .env
+// TODO: refactor to makerService class
 const MAKER_URL = 'http://localhost:3000';
 
 type Props = {
@@ -13,8 +14,10 @@ type Props = {
 };
 
 export default function HomePage(props: Props) {
-  const [maker, setMaker] = useState({});
   const [taker, setTaker] = useState({});
+
+  // TODO: refactor below to use hooks, useMakerStore
+  const [maker, setMaker] = useState({});
   const [swaps, setSwaps] = useState([]);
   const [rate, setRate] = useState('Loading...');
 
@@ -69,7 +72,7 @@ export default function HomePage(props: Props) {
 
   return (
     <Box>
-      <Balances />
+      <Wallet />
 
       <Card>
         <Heading textAlign="center">Swap DAI for BTC</Heading>
