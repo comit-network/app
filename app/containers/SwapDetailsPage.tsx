@@ -8,8 +8,6 @@ import { getTaker, parseProperties, runTakerNextStep } from '../utils/comit';
 import useInterval from '../utils/useInterval';
 import SwapLoader from '../components/SwapLoader';
 
-const POLL_INTERVAL = 5000; // TODO: move to .env
-
 export default function SwapDetailsPage() {
   const { id } = useParams();
   const [swap, setSwap] = useState();
@@ -41,7 +39,7 @@ export default function SwapDetailsPage() {
     if (swapNotDone) {
       pollSwap(id);
     }
-  }, POLL_INTERVAL); // Poll every 5 seconds
+  }, process.env.POLL_INTERVAL); // Poll every 5 seconds
 
   return (
     <Box>

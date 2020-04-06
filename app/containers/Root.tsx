@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
@@ -6,7 +7,6 @@ import { History } from 'history';
 import { BaseStyles } from 'rimble-ui';
 import { Store } from '../reducers/types';
 import Routes from '../Routes';
-import { loadEnvironment } from '../utils/comit';
 import { WalletStoreProvider } from '../hooks/useWalletStore';
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
 };
 
 const Root = ({ store, history }: Props) => {
-  loadEnvironment();
+  dotenv.config();
 
   return (
     <Provider store={store}>
