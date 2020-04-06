@@ -9,7 +9,7 @@
     "build-e2e": "cross-env E2E_BUILD=true yarn build",
     "build-main": "cross-env NODE_ENV=production webpack --config ./configs/webpack.config.main.prod.babel.js --colors",
     "build-renderer": "cross-env NODE_ENV=production webpack --config ./configs/webpack.config.renderer.prod.babel.js --colors",
-    "comit:import-env": "cp ~/.create-comit-app/env .env && cat .env.application >> .env",
+    "comit:env": "cp ~/.create-comit-app/env .env && cat .env.application >> .env",
     "dev": "cross-env START_HOT=1 node -r @babel/register ./internals/scripts/CheckPortInUse.js && cross-env START_HOT=1 yarn start-renderer-dev",
     "dev:maker": "cd maker && yarn dev:all",
     "dev:all": "concurrently \"yarn dev:maker\" \"yarn dev:client\"",
