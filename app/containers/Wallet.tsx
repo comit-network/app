@@ -7,7 +7,7 @@ import { useWalletStore } from '../hooks/useWalletStore';
 import { setBTCBalance, setDAIBalance, setETHBalance } from '../actions/wallet';
 
 export default function Wallet() {
-  const { balances, dispatch } = useWalletStore();
+  const { state, dispatch } = useWalletStore();
 
   // TODO: refactor to useWallet hook?
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function Wallet() {
         process.env.ERC20_CONTRACT_ADDRESS
       );
       dispatch(setETHBalance(parseFloat(formatEther(ethBalance))));
-      dispatch(setDAIBalance(parseFloat(formatEther(erc20Balance))));
+      dispatch(setDAIBalance(erc20Balance.toNumber()));
       dispatch(setBTCBalance(bitcoinBalance));
     }
     fetchBalances();
@@ -44,13 +44,13 @@ export default function Wallet() {
         My Wallet
       </Text>
       <Text fontSize={2} mb={3} position="right" display="flex">
-        <Eth mr={2} /> ETH: {balances.ETHBalance}
+        <Eth mr={2} /> ETH: {state.ETHBalance}
       </Text>
       <Text fontSize={2} mb={3} display="flex">
-        <Dai mr={2} /> DAI: {balances.DAIBalance}
+        <Dai mr={2} /> DAI: {state.DAIBalance}
       </Text>
       <Text fontSize={2} mb={3} position="right" display="flex">
-        <Btc mr={2} /> BTC: {balances.BTCBalance}
+        <Btc mr={2} /> BTC: {state.BTCBalance}
       </Text>
     </Flex>
   );

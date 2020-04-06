@@ -63,7 +63,7 @@ export default function HomePage(props: Props) {
 
   useEffect(() => {
     async function fetchRate() {
-      const { rates } = await makerService.getRates();
+      const rates = await makerService.getRates();
       setRate(rates.dai.btc);
     }
     fetchRate();

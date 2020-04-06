@@ -1,11 +1,12 @@
 import React, { createContext, useReducer, useContext } from 'react';
 import PropTypes from 'prop-types';
+import { BigNumber } from 'comit-sdk';
 import { Action } from '../actions/wallet';
 
 interface State {
-  BTCBalance: number | undefined;
-  ETHBalance: number | undefined;
-  DAIBalance: number | undefined;
+  BTCBalance: BigNumber | undefined;
+  ETHBalance: BigNumber | undefined;
+  DAIBalance: BigNumber | undefined;
 }
 
 export const defaultState: State = {
