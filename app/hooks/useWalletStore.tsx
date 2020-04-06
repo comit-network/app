@@ -52,8 +52,5 @@ WalletStoreProvider.propTypes = {
   children: PropTypes.node.isRequired
 };
 
-// We cast the return result as ContextValue to do away with the
-// default null value. The store will always be available so long as the
-// consuming component is under a provider.
 export const useWalletStore = () =>
   useContext(WalletStoreContext) as ContextValue;

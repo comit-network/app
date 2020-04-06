@@ -4,6 +4,7 @@ import { getTaker } from '../utils/comit';
 import SwapForm from './SwapForm';
 import SwapList from '../components/SwapList';
 import Wallet from './Wallet';
+import MakerService from '../services/makerService';
 
 // TODO: add MAKER_URL to .env
 // TODO: refactor to makerService class
@@ -14,17 +15,22 @@ type Props = {
 };
 
 export default function HomePage(props: Props) {
+  const makerService = new MakerService(MAKER_URL);
   const [taker, setTaker] = useState({});
 
-  // TODO: refactor below to use hooks, useMakerStore
+  // TODO: refactor below to use hooks, enable switching makers eventually
   const [maker, setMaker] = useState({});
   const [swaps, setSwaps] = useState([]);
   const [rate, setRate] = useState('Loading...');
 
   useEffect(() => {
     async function fetchMaker() {
-      const res = await fetch(MAKER_URL);
-      const { peerId, addressHint, ETHAddress, BTCAddress } = await res.json();
+      const {
+        peerId,
+        addressHint,
+        ETHAddress,
+        BTCAddress
+      } = await makerService.getIdentity();
       setMaker({ peerId, addressHint, ETHAddress, BTCAddress });
     }
     fetchMaker();
@@ -49,17 +55,15 @@ export default function HomePage(props: Props) {
 
   useEffect(() => {
     async function fetchSwaps() {
-      const res = await fetch(`${MAKER_URL}/swaps`);
-      const { swaps: allSwaps } = await res.json();
-      setSwaps(allSwaps);
+      const s = await makerService.getSwaps();
+      setSwaps(s);
     }
     fetchSwaps();
   }, []);
 
   useEffect(() => {
     async function fetchRate() {
-      const res = await fetch(`${MAKER_URL}/rates`);
-      const { rates } = await res.json();
+      const { rates } = await makerService.getRates();
       setRate(rates.dai.btc);
     }
     fetchRate();
