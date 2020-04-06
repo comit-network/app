@@ -6,16 +6,12 @@ import SwapList from '../components/SwapList';
 import Wallet from './Wallet';
 import MakerService from '../services/makerService';
 
-// TODO: add MAKER_URL to .env
-// TODO: refactor to makerService class
-const MAKER_URL = 'http://localhost:3000';
-
 type Props = {
   history: History;
 };
 
 export default function HomePage(props: Props) {
-  const makerService = new MakerService(MAKER_URL);
+  const makerService = new MakerService(process.env.MAKER_URL);
   const [taker, setTaker] = useState({});
 
   // TODO: refactor below to use hooks, enable switching makers eventually
