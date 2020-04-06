@@ -9,6 +9,7 @@ import { setBTCBalance, setDAIBalance, setETHBalance } from '../actions/wallet';
 export default function Wallet() {
   const { balances, dispatch } = useWalletStore();
 
+  // TODO: refactor to useWallet hook?
   useEffect(() => {
     async function fetchBalances() {
       const t = await getTaker();
