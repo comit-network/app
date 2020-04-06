@@ -1,10 +1,11 @@
+require('dotenv').config();
 const {
-  loadEnvironment,
   getPendingSwaps,
   findSwapById,
   runMakerNextStep,
   getMaker
 } = require('./comit');
+
 
 
 const fetchBalances = async () => {
@@ -46,7 +47,6 @@ const pollForever = async (collection, ms) => {
 };
 
 (async() => {
-  loadEnvironment();
   console.log('Start polling');
   await pollForever([], 1000); // 1s interval
 })();

@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const dotenv = require("dotenv");
 const {
   Actor,
   BigNumber,
@@ -110,21 +109,6 @@ async function runMakerNextStep(swapId) {
   await MAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
 }
 
-function loadEnvironment() {
-  // TODO: change this to use .env within the `maker` directory
-  const envFilePath = path.join(os.homedir(), ".create-comit-app", "env");
-
-  if (!fs.existsSync(envFilePath)) {
-      console.log(
-          "Could not find file %s. Did you run `yarn start-env`?",
-          envFilePath
-      );
-      process.exit(1);
-  }
-
-  dotenv.config({ path: envFilePath });
-}
-
 async function getMaker() {
   const maker = await getNode(0, 'Maker');
   return maker;
@@ -152,7 +136,6 @@ async function getNode(index, name) {
 }
 
 module.exports = {
-  loadEnvironment,
   getNode,
   getMaker,
   getSwaps,

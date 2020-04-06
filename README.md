@@ -26,12 +26,16 @@ Install dependencies for both Maker and Taker with `yarn`.
 ```bash
 $ cd app
 $ yarn
+$ yarn comit:import-env
 ```
 
 ```bash
 $ cd maker
 $ yarn
+$ yarn comit:import-env
 ```
+
+> Note: both maker and taker uses its own project-specific `.env` file for modularity and ease of deployment. Whenever you restart `comit-scripts` with `yarn start-env`, ensure that you rerun `yarn comit:env` for both `app` and `maker`.
 
 ## Running Maker Locally
 
