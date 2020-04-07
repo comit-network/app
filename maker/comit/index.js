@@ -10,6 +10,7 @@ const {
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
+const MakerStateMachine = require('./stateMachine');
 
 async function parsePropertiesList(swaps) {
   const properties = await Promise.all(_.map(swaps, s => parseProperties(s)));
@@ -38,12 +39,9 @@ async function getSwaps() {
 async function getPendingSwaps() { // Ignores Done
   const maker = await getMaker();
   const newSwaps = await maker.comitClient.getNewSwaps();
-  const newSwapsProperties = await parsePropertiesList(newSwaps);
-
   const ongoingSwaps = await maker.comitClient.getOngoingSwaps();
-  const ongoingSwapsProperties = await parsePropertiesList(ongoingSwaps);
 
-  return [...newSwapsProperties, ...ongoingSwapsProperties];
+  return [...newSwaps, ...ongoingSwaps];
 }
 
 async function findSwapById(swapId) {
@@ -51,62 +49,6 @@ async function findSwapById(swapId) {
   const s = await maker.comitClient.retrieveSwapById(swapId);
   const properties = await parseProperties(s);
   return properties;
-}
-
-function parseMakerSwapStatus(swapProperties) {
-  console.log('parseMakerSwapStatus');
-  const { state } = swapProperties;
-
-  const TAKER_SENT = (state.communication.status === 'SENT' && state.alpha_ledger.status === 'NOT_DEPLOYED' && state.beta_ledger.status === 'NOT_DEPLOYED');
-  if (TAKER_SENT) {
-    return 'TAKER_SENT';
-  }
-
-  const TAKER_LEDGER_FUNDED = (state.alpha_ledger.status === 'FUNDED' && state.beta_ledger.status === 'NOT_DEPLOYED');
-  if (TAKER_LEDGER_FUNDED) {
-    return 'TAKER_LEDGER_FUNDED';
-  }
-
-  const TAKER_LEDGER_REDEEMED = (state.alpha_ledger.status === 'REDEEMED' && state.beta_ledger.status === 'FUNDED');
-  if (TAKER_LEDGER_REDEEMED) {
-    return 'TAKER_LEDGER_REDEEMED';
-  }
-
-  // TODO: handle more statuses / edge cases e.g. REFUND
-  return 'DONE';
-}
-
-async function runMakerNextStep(swapId) {
-  console.log('runMakerNextStep');
-  const maker = await getMaker();
-  const swap = await maker.comitClient.retrieveSwapById(swapId);
-  const properties = await parseProperties(swap);
-
-  // 1. Get current status
-  const swapStatus = await parseMakerSwapStatus(properties);
-  console.log(swapStatus);
-
-  const MAKER_SWAP_STATE_MACHINE = {
-    'TAKER_SENT': async params => {
-      console.log('running swap.accept');
-      await swap.accept(params);
-    }, // results in MAKER_ACCEPTED
-    'TAKER_LEDGER_FUNDED': async params => {
-      console.log('running swap.fund');
-      await swap.fund(params);
-    }, // results in MAKER_LEDGER_FUNDED
-    'TAKER_LEDGER_REDEEMED': async params => {
-      console.log('running swap.redeem');
-      await swap.redeem(params);
-    }, // results in MAKER_LEDGER_REDEEMED
-    'DONE': async () => {
-      return true;
-    },
-  }
-
-  // 2. Execute next step
-  const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 }; // TODO: HARDCODED
-  await MAKER_SWAP_STATE_MACHINE[swapStatus](tryParams);
 }
 
 async function getMaker() {
@@ -141,6 +83,5 @@ module.exports = {
   getSwaps,
   getPendingSwaps,
   findSwapById,
-  parseMakerSwapStatus,
-  runMakerNextStep
+  MakerStateMachine
 }

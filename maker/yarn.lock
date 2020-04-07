@@ -97,6 +97,15 @@
     lodash.camelcase "^4.3.0"
     protobufjs "^6.8.6"
 
+"@paybase/machine@^1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@paybase/machine/-/machine-1.0.12.tgz#598c9f556e1a5cdc0a72f299451524f0eee21ab1"
+  integrity sha512-lHv2BtsQymVVbF2Th3Cw8dSkPn157IdZ4D8rs6msTliWeWzWxamVn0pdvOwndKmjqOvk7uDzW9ZhxLsy60DObg==
+  dependencies:
+    commander "^2.11.0"
+    css-to-object "^1.1.0"
+    viz.js "^1.8.0"
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
@@ -964,6 +973,11 @@ comit-sdk@^0.13.0:
     p-event "^4.1.0"
     urijs "^1.19.2"
 
+commander@^2.11.0:
+  version "2.20.3"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
+  integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
+
 commist@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/commist/-/commist-1.1.0.tgz#17811ec6978f6c15ee4de80c45c9beb77cee35d5"
@@ -1075,6 +1089,24 @@ cross-spawn@^4:
   dependencies:
     lru-cache "^4.0.1"
     which "^1.2.9"
+
+css-to-object@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/css-to-object/-/css-to-object-1.1.0.tgz#a1d82b0288b4fc16ac7d8bb54280c70f5b7f05d8"
+  integrity sha512-GUKxbpivbuE+AV9IIDYXMWONUgm6O89TUIGBpeHYrLNrGRV9qLbSjmr4/qqM3TL3FTfzsQQpq0XWdbVjFAwBOA==
+  dependencies:
+    css "^2.2.1"
+    stylis "^2.0.4"
+
+css@^2.2.1:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/css/-/css-2.2.4.tgz#c646755c73971f2bba6a601e2cf2fd71b1298929"
+  integrity sha512-oUnjmWpy0niI3x/mPL8dVEI1l7MnG3+HHyRPHf+YFSbK+svOhXpmSOcDURUh2aOCgl2grzrOPt1nHLuCVFULLw==
+  dependencies:
+    inherits "^2.0.3"
+    source-map "^0.6.1"
+    source-map-resolve "^0.5.2"
+    urix "^0.1.0"
 
 dashdash@^1.12.0:
   version "1.14.1"
@@ -3638,7 +3670,7 @@ sonic-boom@^0.7.5:
   dependencies:
     flatstr "^1.0.12"
 
-source-map-resolve@^0.5.0:
+source-map-resolve@^0.5.0, source-map-resolve@^0.5.2:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/source-map-resolve/-/source-map-resolve-0.5.3.tgz#190866bece7553e1f8f267a2ee82c606b5509a1a"
   integrity sha512-Htz+RnsXWk5+P2slx5Jh3Q66vhQj1Cllm0zvnaY98+NFx+Dv2CF/f5O/t8x+KaNdrdIAsruNzoh/KpialbqAnw==
@@ -3863,6 +3895,11 @@ strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
   integrity sha1-PFMZQukIwml8DsNEhYwobHygpgo=
+
+stylis@^2.0.4:
+  version "2.0.12"
+  resolved "https://registry.yarnpkg.com/stylis/-/stylis-2.0.12.tgz#547253055d170f2a7ac2f6d09365d70635f2bec6"
+  integrity sha1-VHJTBV0XDyp6wvbQk2XXBjXyvsY=
 
 supports-color@^5.3.0:
   version "5.5.0"
@@ -4233,6 +4270,11 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+viz.js@^1.8.0:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/viz.js/-/viz.js-1.8.2.tgz#d9cc04cd99f98ec986bf9054db76a6cbcdc5d97a"
+  integrity sha512-W+1+N/hdzLpQZEcvz79n2IgUE9pfx6JLdHh3Kh8RGvLL8P1LdJVQmi2OsDcLdY4QVID4OUy+FPelyerX0nJxIQ==
 
 walker@^1.0.6:
   version "1.0.7"
