@@ -1,5 +1,5 @@
-app/.env
-app/.env.application
+.env
+.env.application
 
 # Logs
 logs

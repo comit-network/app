@@ -3,7 +3,7 @@
 require('dotenv').config();
 const { name, version } = require("../package.json");
 const {
-  getNode
+  getMaker
 } = require('../comit');
 
 module.exports = function (fastify, opts, next) {
@@ -12,7 +12,7 @@ module.exports = function (fastify, opts, next) {
   })
 
   fastify.get('/', async function (request, reply) {
-    const maker = await getNode(0, 'Maker');
+    const maker = await getMaker();
     const { peerId, addressHint } = maker;
     const ETHAddress = await maker.ethereumWallet.getAccount();
     const BTCAddress = await maker.bitcoinWallet.getAddress();
