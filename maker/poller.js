@@ -1,11 +1,9 @@
 require('dotenv').config();
 const {
   getPendingSwaps,
-  findSwapById,
-  runMakerNextStep,
-  getMaker
+  getMaker,
+  MakerStateMachine
 } = require('./comit');
-
 
 
 const fetchBalances = async () => {
@@ -30,8 +28,9 @@ const pollForever = async (collection, ms) => {
   console.log(`== checking status of ${swaps.length} pending swaps`)
   for (let swap of swaps) {
     console.log(swap.id);
+    const sm = new MakerStateMachine(swap.id);
     try {
-      await runMakerNextStep(swap.id);
+      await sm.next();
     } catch(err) {
       console.log('NEXT STEP FAILED');
       console.log(err);

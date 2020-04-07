@@ -1,8 +1,4 @@
-import dotenv from 'dotenv';
 import { createActor, EthereumWallet, InMemoryBitcoinWallet } from 'comit-sdk';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
 import moment from 'moment';
 import { toSatoshi } from 'satoshi-bitcoin-ts';
 import toBaseUnit from './index';
@@ -110,21 +106,6 @@ export async function runTakerNextStep(swapId) {
   const TRY_PARAMS = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
   await TAKER_SWAP_STATE_MACHINE[swapStatus](TRY_PARAMS);
   console.log('Next step executed');
-}
-
-export function loadEnvironment() {
-  // TODO: change this to use .env within the `maker` directory
-  const envFilePath = path.join(os.homedir(), '.create-comit-app', 'env');
-
-  if (!fs.existsSync(envFilePath)) {
-    console.log(
-      'Could not find file %s. Did you run `yarn start-env`?',
-      envFilePath
-    );
-    process.exit(1);
-  }
-
-  dotenv.config({ path: envFilePath });
 }
 
 export function buildSwap(
