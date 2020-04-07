@@ -27,8 +27,7 @@ const pollForever = async (collection, ms) => {
   console.log(`BTC: ${btc} - DAI: ${dai}`);
   console.log(`== checking status of ${swaps.length} pending swaps`)
   for (let swap of swaps) {
-    console.log(swap.id);
-    const sm = new MakerStateMachine(swap.id);
+    const sm = new MakerStateMachine(swap);
     try {
       await sm.next();
     } catch(err) {

@@ -10,7 +10,7 @@
     "test": "tap test/**/*.test.js",
     "start": "fastify start -l info app.js",
     "comit:env": "cp ~/.create-comit-app/env .env",
-    "dev": "fastify start -w -l info -P app.js",
+    "dev": "yarn comit:env && fastify start -w -l info -P app.js",
     "dev:all": "concurrently \"yarn dev\" \"yarn poll\"",
     "poll": "node poller.js"
   },

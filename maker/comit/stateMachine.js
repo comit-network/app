@@ -23,7 +23,7 @@ async function parseStatus(swap) {
   return 'DONE';
 }
 
-export default class MakerStateMachine {
+class MakerStateMachine {
   constructor(swap) {
     this.swap = swap;
   }
@@ -44,15 +44,15 @@ export default class MakerStateMachine {
     const MAKER_SWAP_STATE_MACHINE = {
       'TAKER_SENT': async params => {
         console.log('running swap.accept');
-        await swap.accept(params);
+        await this.swap.accept(params);
       }, // results in MAKER_ACCEPTED
       'TAKER_LEDGER_FUNDED': async params => {
         console.log('running swap.fund');
-        await swap.fund(params);
+        await this.swap.fund(params);
       }, // results in MAKER_LEDGER_FUNDED
       'TAKER_LEDGER_REDEEMED': async params => {
         console.log('running swap.redeem');
-        await swap.redeem(params);
+        await this.swap.redeem(params);
       }, // results in MAKER_LEDGER_REDEEMED
       'DONE': async () => {
         return true;
@@ -64,3 +64,5 @@ export default class MakerStateMachine {
     await MAKER_SWAP_STATE_MACHINE[status](tryParams);
   }
 }
+
+module.exports = MakerStateMachine;
