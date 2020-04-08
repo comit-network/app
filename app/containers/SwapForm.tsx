@@ -9,7 +9,7 @@ import {
   Input,
   Loader
 } from 'rimble-ui';
-import { buildSwap } from '../utils/comit';
+import { buildSwap } from '../comit';
 
 type Props = {
   rate: number;

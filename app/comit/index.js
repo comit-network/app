@@ -43,6 +43,12 @@ export async function findSwapById(swapId) {
   return properties;
 }
 
+export async function retrieveSwapById(swapId) {
+  const taker = await getTaker();
+  const swap = await taker.comitClient.retrieveSwapById(swapId);
+  return swap;
+}
+
 export function buildSwap(
   makerPeerId,
   makerAddressHint,

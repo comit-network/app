@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Text, Icon, Flex } from 'rimble-ui';
 import { Btc, Eth, Dai } from '@rimble/icons';
 import { formatEther } from 'ethers/utils';
-import { getTaker } from '../utils/comit';
+import { getTaker } from '../comit';
 import { useWalletStore } from '../hooks/useWalletStore';
 import { setBTCBalance, setDAIBalance, setETHBalance } from '../actions/wallet';
 
