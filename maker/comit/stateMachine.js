@@ -1,5 +1,3 @@
-const { getMaker, parseProperties } = require('./index');
-
 async function parseStatus(swap) {
   const { properties } = await swap.fetchDetails();
   const { state } = properties;
