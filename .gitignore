@@ -1,5 +1,7 @@
 .env
 .env.application
+app/.env
+app/.env.application
 
 # Logs
 logs

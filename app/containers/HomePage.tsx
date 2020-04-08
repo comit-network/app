@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, Heading } from 'rimble-ui';
-import { getTaker } from '../utils/comit';
+import { getTaker } from '../comit';
 import SwapForm from './SwapForm';
 import SwapList from '../components/SwapList';
 import Wallet from './Wallet';

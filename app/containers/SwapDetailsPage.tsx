@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Card, Box, Text, Heading, Button, Flex } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
-import { getTaker, parseProperties, runTakerNextStep } from '../utils/comit';
+import { getTaker, findSwapById, TakerStateMachine } from '../comit';
 import useInterval from '../utils/useInterval';
 import SwapLoader from '../components/SwapLoader';
 
@@ -14,9 +14,7 @@ export default function SwapDetailsPage() {
 
   useEffect(() => {
     async function fetchSwap(swapId) {
-      const t = await getTaker();
-      const s = await t.comitClient.retrieveSwapById(swapId);
-      const properties = await parseProperties(s);
+      const properties = await findSwapById(swapId);
       setSwap(properties);
     }
     fetchSwap(id);
@@ -24,20 +22,23 @@ export default function SwapDetailsPage() {
 
   useInterval(() => {
     async function fetchSwap(swapId) {
-      const t = await getTaker();
-      const s = await t.comitClient.retrieveSwapById(swapId);
-      const properties = await parseProperties(s);
+      const properties = await findSwapById(swapId);
       setSwap(properties);
     }
-    async function pollSwap(swapId) {
-      await runTakerNextStep(swapId);
+    async function pollSwap(swp) {
+      const sm = new TakerStateMachine(swp);
+      await sm.next();
       await fetchSwap(swapId);
     }
+
+    // TODO: debounce to one outgoing request at a time
+    // with a expired/resend state flag
+
     const swapNotDone =
       _.get(swap, 'status') === 'NEW' ||
       _.get(swap, 'status') === 'IN_PROGRESS';
     if (swapNotDone) {
-      pollSwap(id);
+      pollSwap(swap);
     }
   }, process.env.POLL_INTERVAL); // Poll every 5 seconds
 
