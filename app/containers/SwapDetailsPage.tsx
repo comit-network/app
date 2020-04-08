@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Card, Box, Text, Heading, Button, Flex } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
-import { getTaker, findSwapById, TakerStateMachine } from '../comit';
+import { findSwapById, retrieveSwapById, TakerStateMachine } from '../comit';
 import useInterval from '../utils/useInterval';
 import SwapLoader from '../components/SwapLoader';
 
@@ -25,7 +25,8 @@ export default function SwapDetailsPage() {
       const properties = await findSwapById(swapId);
       setSwap(properties);
     }
-    async function pollSwap(swp) {
+    async function pollSwap(swapId) {
+      const swp = await retrieveSwapById(swapId);
       const sm = new TakerStateMachine(swp);
       await sm.next();
       await fetchSwap(swapId);
@@ -38,7 +39,7 @@ export default function SwapDetailsPage() {
       _.get(swap, 'status') === 'NEW' ||
       _.get(swap, 'status') === 'IN_PROGRESS';
     if (swapNotDone) {
-      pollSwap(swap);
+      pollSwap(id);
     }
   }, process.env.POLL_INTERVAL); // Poll every 5 seconds
 
