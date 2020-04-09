@@ -28,7 +28,11 @@ export default function SwapDetailsPage() {
     async function pollSwap(swapId) {
       const swp = await retrieveSwapById(swapId);
       const sm = new TakerStateMachine(swp);
-      await sm.next();
+      try {
+        await sm.next();
+      } catch (error) {
+        console.log(error);
+      }
       await fetchSwap(swapId);
     }
 
@@ -129,7 +133,7 @@ export default function SwapDetailsPage() {
             flexDirection={['column', 'row']}
           >
             <Text color="near-black" fontWeight="bold">
-              Your ledger
+              Alpha ledger
             </Text>
             <Text color="mid-gray">
               {_.get(swap, 'state.alpha_ledger.status')}
@@ -143,7 +147,7 @@ export default function SwapDetailsPage() {
             flexDirection={['column', 'row']}
           >
             <Text color="near-black" fontWeight="bold">
-              Maker ledger
+              Beta ledger
             </Text>
             <Text color="mid-gray">
               {_.get(swap, 'state.beta_ledger.status')}
