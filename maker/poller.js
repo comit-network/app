@@ -16,7 +16,7 @@ const fetchBalances = async () => {
   const erc20Balance = await m.ethereumWallet.getErc20Balance(
     process.env.ERC20_CONTRACT_ADDRESS
   );
-  return { btc: bitcoinBalance, dai: erc20Balance.toNumber()}
+  return { btc: bitcoinBalance, dai: erc20Balance.toString()}
 }
 
 const sleep = m => new Promise(r => setTimeout(r, m))

@@ -17,16 +17,18 @@ async function parseStatus(swap) {
     return 'TAKER_LEDGER_DEPLOYED';
   }
 
-  const MAKER_LEDGER_FUNDED = state.alpha_ledger.status === 'FUNDED';
+  const MAKER_LEDGER_FUNDED =
+    state.alpha_ledger.status === 'FUNDED' &&
+    state.beta_ledger.status === 'FUNDED';
   if (MAKER_LEDGER_FUNDED) {
     return 'MAKER_LEDGER_FUNDED';
   }
 
-  const MAKER_LEDGER_REDEEMED =
+  const MAKER_REDEEMED =
     state.alpha_ledger.status === 'REDEEMED' &&
     state.beta_ledger.status === 'REDEEMED';
-  if (MAKER_LEDGER_REDEEMED) {
-    return 'MAKER_LEDGER_REDEEMED';
+  if (MAKER_REDEEMED) {
+    return 'MAKER_REDEEMED';
   }
 
   // TODO: handle additional statuses and edge cases
@@ -66,7 +68,7 @@ export default class TakerStateMachine {
         console.log('running swap.redeem');
         await this.swap.redeem(params);
       }, // results in TAKER_LEDGER_REDEEMED
-      MAKER_LEDGER_REDEEMED: async () => {
+      MAKER_REDEEMED: async () => {
         return true; // noop
       },
       DONE: async () => {
@@ -75,7 +77,7 @@ export default class TakerStateMachine {
     };
 
     console.log('Executing next step...');
-    const TRY_PARAMS = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
+    const TRY_PARAMS = { maxTimeoutSecs: 30, tryIntervalSecs: 1 };
     await TAKER_SWAP_STATE_MACHINE[status](TRY_PARAMS);
     console.log('Next step executed');
   }
