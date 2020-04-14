@@ -30,7 +30,7 @@ $ yarn # Run in the root project directory
 
 $ cd app
 $ yarn
-$ yarn comit:import-env
+$ yarn dev
 ```
 
 You need to run `yarn` for the taker twice because of Electron's [two package structure](https://www.electron.build/tutorials/two-package-structure).
@@ -40,42 +40,14 @@ You need to run `yarn` for the taker twice because of Electron's [two package st
 ```bash
 $ cd maker
 $ yarn
-$ yarn comit:import-env
-```
-
-> Note: both maker and taker uses its own project-specific `.env` file for modularity and ease of deployment. Whenever you restart `comit-scripts` with `yarn start-env`, ensure that you rerun `yarn comit:env` for both `app` and `maker`.
-
-## Running Maker Locally
-
-```bash
-$ cd maker
 $ yarn dev
 ```
 
-For ease of testing, the maker poller is run separately:
+For ease of debugging, the maker poller is run separately:
 
 ```bash
 $ cd maker
 $ yarn poll
-```
-
-Both components can be run concurrently:
-
-```bash
-$ cd maker
-$ yarn dev:all
-```
-
-## Running Taker App Locally
-
-```bash
-$ yarn dev
-```
-
-You can run both Maker (+poller) and Taker concurrently:
-
-```bash
-$ yarn dev:all
 ```
 
 ## Packaging for Production
