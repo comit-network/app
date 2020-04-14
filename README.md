@@ -21,13 +21,21 @@ docs/
 
 ## Getting Started
 
-Install dependencies for both Maker and Taker with `yarn`.
+Install dependencies for both Taker with `yarn`.
+
+## Taker
 
 ```bash
+$ yarn # Run in the root project directory
+
 $ cd app
 $ yarn
 $ yarn comit:import-env
 ```
+
+You need to run `yarn` for the taker twice because of Electron's [two package structure](https://www.electron.build/tutorials/two-package-structure).
+
+# Maker
 
 ```bash
 $ cd maker
