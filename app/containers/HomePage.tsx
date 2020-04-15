@@ -51,7 +51,11 @@ export default function HomePage(props: Props) {
 
   useEffect(() => {
     async function fetchSwaps() {
-      const swps = await getSwaps();
+      console.log('fetchSwaps');
+      // Retrieving swaps via comitClient below does not work
+      const swps2 = await getSwaps();
+      console.log(swps2);
+      const swps = await makerService.getSwaps();
       setSwaps(swps);
     }
     fetchSwaps();
