@@ -31,6 +31,16 @@ export async function getTaker() {
   return taker;
 }
 
+// TODO: SDK should have this, should be wrapper of just plain this.cnd.getSwaps()
+export async function getSwaps() {
+  const taker = await getTaker();
+  const newSwaps = await taker.comitClient.getNewSwaps();
+  const ongoingSwaps = await taker.comitClient.getOngoingSwaps();
+  const doneSwaps = await taker.comitClient.getDoneSwaps();
+
+  return [...newSwaps, ...ongoingSwaps, ...doneSwaps];
+}
+
 async function parseProperties(swap) {
   const { properties } = await swap.fetchDetails();
   return properties;
@@ -56,7 +66,7 @@ export function buildSwap(
   daiAmount,
   btcAmount
 ) {
-  return {
+  const message = {
     alpha_ledger: {
       name: 'ethereum',
       chain_id: 17
@@ -82,4 +92,6 @@ export function buildSwap(
       address_hint: makerAddressHint
     }
   };
+  console.log(message);
+  return message;
 }

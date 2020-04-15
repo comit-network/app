@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Text, Flex, Loader } from 'rimble-ui';
 
 /* eslint-disable react/jsx-no-undef */
-export default function SwapLoader(props: Props) {
+export default function SwapProgress(props: Props) {
   const { status } = props;
 
   if (status === 'SWAPPED') {
