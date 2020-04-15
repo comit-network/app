@@ -30,6 +30,8 @@ $ yarn # Run in the root project directory
 
 $ cd app
 $ yarn
+
+$ cd ..
 $ yarn dev
 ```
 
@@ -63,3 +65,11 @@ Then, open the `release/` directory.
 ## Docs
 
 See [docs and guides here](https://electron-react-boilerplate.js.org/docs/installation)
+
+## Troubleshooting
+
+### Missing '.env' when running Taker app
+
+Make sure that an `.env` and `.env.application` exists in the root directory.
+
+See `.env.sample` and `.env.application.sample` for a sample template.
