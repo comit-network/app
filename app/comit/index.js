@@ -41,22 +41,10 @@ export async function getSwaps() {
   return [...newSwaps, ...ongoingSwaps, ...doneSwaps];
 }
 
-async function parseProperties(swap) {
+export async function findSwapById(actor, swapId) {
+  const swap = await actor.comitClient.retrieveSwapById(swapId);
   const { properties } = await swap.fetchDetails();
   return properties;
-}
-
-export async function findSwapById(swapId) {
-  const taker = await getTaker();
-  const s = await taker.comitClient.retrieveSwapById(swapId);
-  const properties = await parseProperties(s);
-  return properties;
-}
-
-export async function retrieveSwapById(swapId) {
-  const taker = await getTaker();
-  const swap = await taker.comitClient.retrieveSwapById(swapId);
-  return swap;
 }
 
 export function buildSwap(

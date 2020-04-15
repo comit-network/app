@@ -15,8 +15,10 @@ export default function Wallet() {
     async function fetchBalances() {
       const bitcoinBalance = await taker.bitcoinWallet.getBalance();
       dispatch(setBTCBalance(bitcoinBalance));
+
       const ethBalance = await taker.ethereumWallet.getBalance();
       dispatch(setETHBalance(parseFloat(formatEther(ethBalance))));
+
       const erc20Balance = await taker.ethereumWallet.getErc20Balance(
         process.env.ERC20_CONTRACT_ADDRESS
       );
@@ -25,9 +27,7 @@ export default function Wallet() {
       // TOFIX: For some reason the following line is needed for bitcoin balance to be displayed correctly
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    if (isTakerLoaded) {
-      fetchBalances();
-    }
+    if (isTakerLoaded) fetchBalances();
   }, [isTakerLoaded]);
 
   return (
