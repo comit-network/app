@@ -20,6 +20,7 @@ export default function SwapDetailsPage() {
     fetchSwap(id);
   }, []);
 
+  // TODO: minimize use of find, use retrieve once instead and fetchDetails() after
   useInterval(() => {
     async function fetchSwap(swapId) {
       const properties = await findSwapById(swapId);

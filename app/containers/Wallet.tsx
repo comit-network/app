@@ -18,14 +18,14 @@ export default function Wallet() {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // TODO: extract the following logic to wallet hook?
-      const ethBalance = await t.ethereumWallet.getBalance();
       const bitcoinBalance = await t.bitcoinWallet.getBalance();
+      dispatch(setBTCBalance(bitcoinBalance));
+      const ethBalance = await t.ethereumWallet.getBalance();
+      dispatch(setETHBalance(parseFloat(formatEther(ethBalance))));
       const erc20Balance = await t.ethereumWallet.getErc20Balance(
         process.env.ERC20_CONTRACT_ADDRESS
       );
-      dispatch(setETHBalance(parseFloat(formatEther(ethBalance))));
       dispatch(setDAIBalance(erc20Balance.toNumber()));
-      dispatch(setBTCBalance(bitcoinBalance));
     }
     fetchBalances();
   }, []);
