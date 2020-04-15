@@ -2,33 +2,33 @@ import React, { useEffect } from 'react';
 import { Text, Icon, Flex } from 'rimble-ui';
 import { Btc, Eth, Dai } from '@rimble/icons';
 import { formatEther } from 'ethers/utils';
-import { getTaker } from '../comit';
 import { useWalletStore } from '../hooks/useWalletStore';
+import { useTaker } from '../hooks/useTaker';
 import { setBTCBalance, setDAIBalance, setETHBalance } from '../actions/wallet';
 
 export default function Wallet() {
   const { state, dispatch } = useWalletStore();
+  const { taker, isTakerLoaded } = useTaker();
 
   // TODO: refactor to useWallet hook?
   useEffect(() => {
     async function fetchBalances() {
-      const t = await getTaker();
-
-      // TOFIX: For some reason the following line is needed for bitcoin balance to be displayed correctly
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // TODO: extract the following logic to wallet hook?
-      const bitcoinBalance = await t.bitcoinWallet.getBalance();
+      const bitcoinBalance = await taker.bitcoinWallet.getBalance();
       dispatch(setBTCBalance(bitcoinBalance));
-      const ethBalance = await t.ethereumWallet.getBalance();
+      const ethBalance = await taker.ethereumWallet.getBalance();
       dispatch(setETHBalance(parseFloat(formatEther(ethBalance))));
-      const erc20Balance = await t.ethereumWallet.getErc20Balance(
+      const erc20Balance = await taker.ethereumWallet.getErc20Balance(
         process.env.ERC20_CONTRACT_ADDRESS
       );
       dispatch(setDAIBalance(erc20Balance.toNumber()));
+
+      // TOFIX: For some reason the following line is needed for bitcoin balance to be displayed correctly
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    fetchBalances();
-  }, []);
+    if (isTakerLoaded) {
+      fetchBalances();
+    }
+  }, [isTakerLoaded]);
 
   return (
     <Flex justifyContent="space-between" alignItems="center" p={2}>

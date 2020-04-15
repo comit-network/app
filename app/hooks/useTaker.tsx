@@ -1,12 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-// import {
-//   Actor,
-//   // BigNumber,
-//   EthereumWallet,
-//   InMemoryBitcoinWallet,
-//   Cnd
-// } from 'comit-sdk';
 import { getTaker } from '../comit';
 
 export const TakerContext = createContext({});

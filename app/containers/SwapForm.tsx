@@ -20,6 +20,7 @@ type Props = {
 
 export default function SwapForm(props: Props) {
   const { rate, maker, onSwapSent } = props;
+
   const { taker, isTakerLoaded } = useTaker();
   const [formValidated, setFormValidated] = useState(false);
   const [BTCAmount, setBTCAmount] = useState(0);
