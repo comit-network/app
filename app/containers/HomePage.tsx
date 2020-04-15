@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, Heading } from 'rimble-ui';
-import { getTaker } from '../comit';
+import { getTaker, getSwaps } from '../comit';
 import SwapForm from './SwapForm';
 import SwapList from '../components/SwapList';
 import Wallet from './Wallet';
@@ -51,8 +51,8 @@ export default function HomePage(props: Props) {
 
   useEffect(() => {
     async function fetchSwaps() {
-      const s = await makerService.getSwaps();
-      setSwaps(s);
+      const swps = await getSwaps();
+      setSwaps(swps);
     }
     fetchSwaps();
   }, []);

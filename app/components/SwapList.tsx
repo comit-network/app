@@ -1,18 +1,30 @@
 import _ from 'lodash';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Swap } from 'comit-sdk';
 import { Box, Icon, Text, Table, Pill, Button } from 'rimble-ui';
 import { Link } from 'react-router-dom';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
 
 type Props = {
-  swaps: Record[];
+  swaps: Swap[];
 };
 
 // Note: currencies are hardcoded for now
 export default function SwapList(props: Props) {
   const { swaps } = props;
-  const rows = _.map(swaps, s => (
+  const [swapsProperties, setSwapsProperties] = useState([]);
+
+  useEffect(() => {
+    async function fetchSwaps() {
+      const properties = await Promise.all(_.map(swaps, s => s.fetchDetails()));
+      setSwapsProperties(properties);
+    }
+    fetchSwaps();
+  }, []);
+
+  // TODO: use self url instead of id?
+  const rows = _.map(swapsProperties, s => (
     <tr key={s.id}>
       <td>
         {(_.get(s, 'parameters.alpha_asset.quantity') / 10 ** 18)

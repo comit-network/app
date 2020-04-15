@@ -9,6 +9,7 @@ import {
   Input,
   Loader
 } from 'rimble-ui';
+import { toSatoshi } from 'satoshi-bitcoin-ts';
 import { buildSwap } from '../comit';
 
 type Props = {
@@ -27,7 +28,7 @@ export default function SwapForm(props: Props) {
   };
 
   const convertToBTC = dai => {
-    return dai * rate;
+    return (dai * rate).toFixed(8); // Limit to 8 decimal places
   };
 
   const onBTCChange = e => {
@@ -35,6 +36,8 @@ export default function SwapForm(props: Props) {
 
     setBTCAmount(btc);
     setDAIAmount(convertToDAI(btc));
+    console.log(BTCAmount);
+    console.log(toSatoshi(BTCAmount));
   };
 
   const handleDAIChange = e => {
@@ -44,11 +47,20 @@ export default function SwapForm(props: Props) {
     setBTCAmount(convertToBTC(dai));
   };
 
+  const countDecimals = value => {
+    if (Math.floor(value) === value) return 0;
+    return value.toString().split('.')[1].length || 0;
+  };
+
   const validateForm = () => {
     // Perform advanced validation here
-    if (BTCAmount > 0 && DAIAmount > 0) {
+    const nonZeroAmounts = BTCAmount > 0 && DAIAmount > 0;
+    const isValidBTCDecimals = countDecimals(BTCAmount) <= 8;
+
+    if (nonZeroAmounts && isValidBTCDecimals) {
       setFormValidated(true);
     } else {
+      // TODO: setFormError to display the specific validation error
       setFormValidated(false);
     }
   };

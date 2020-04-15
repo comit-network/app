@@ -6,7 +6,7 @@ import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
 import { findSwapById, retrieveSwapById, TakerStateMachine } from '../comit';
 import useInterval from '../utils/useInterval';
-import SwapLoader from '../components/SwapLoader';
+import SwapProgress from '../components/SwapProgress';
 
 export default function SwapDetailsPage() {
   const { id } = useParams();
@@ -65,7 +65,7 @@ export default function SwapDetailsPage() {
           <Box bg="primary" px={3} py={2}>
             <Text color="white">Swap {_.get(swap, 'status')}</Text>
           </Box>
-          <SwapLoader status={_.get(swap, 'status')} />
+          <SwapProgress status={_.get(swap, 'status')} />
           <Flex
             justifyContent="space-between"
             bg="near-white"
