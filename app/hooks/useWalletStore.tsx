@@ -16,9 +16,6 @@ export const defaultState: State = {
 };
 
 export function reducer(state = defaultState, action: Action): State {
-  console.log('reducer');
-  console.log(state);
-  console.log(action);
   switch (action.kind) {
     case 'setBTCBalance':
       return { ...state, BTCBalance: action.value };

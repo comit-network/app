@@ -10,6 +10,7 @@ import {
   Loader
 } from 'rimble-ui';
 import { buildSwap } from '../comit';
+import { useTaker } from '../hooks/useTaker';
 
 const BTC_DECIMALS = 8;
 
@@ -18,7 +19,8 @@ type Props = {
 };
 
 export default function SwapForm(props: Props) {
-  const { rate, maker, taker, onSwapSent } = props;
+  const { rate, maker, onSwapSent } = props;
+  const { taker, isTakerLoaded } = useTaker();
   const [formValidated, setFormValidated] = useState(false);
   const [BTCAmount, setBTCAmount] = useState(0);
   const [DAIAmount, setDAIAmount] = useState(0);
@@ -54,8 +56,8 @@ export default function SwapForm(props: Props) {
     return places[1].length || 0;
   };
 
+  // Form validation
   const validateForm = () => {
-    // Perform advanced validation here
     const nonZeroAmounts = BTCAmount > 0 && DAIAmount > 0;
     const isValidBTCDecimals = countDecimals(BTCAmount) <= BTC_DECIMALS;
 
@@ -80,15 +82,22 @@ export default function SwapForm(props: Props) {
       DAIAmount,
       BTCAmount
     );
-
     setLoading(true);
-    const swap = await taker.client.sendSwap(payload);
+    const swap = await taker.comitClient.sendSwap(payload);
     const {
       properties: { id: swapId }
     } = await swap.fetchDetails();
     setLoading(false);
     onSwapSent(swapId);
   };
+
+  if (!isTakerLoaded) {
+    return (
+      <Box>
+        <Loader color="blue" />
+      </Box>
+    );
+  }
 
   return (
     <Box>

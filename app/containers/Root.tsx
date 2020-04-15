@@ -8,6 +8,7 @@ import { BaseStyles } from 'rimble-ui';
 import { Store } from '../reducers/types';
 import Routes from '../Routes';
 import { WalletStoreProvider } from '../hooks/useWalletStore';
+import { TakerProvider } from '../hooks/useTaker';
 
 type Props = {
   store: Store;
@@ -19,13 +20,15 @@ const Root = ({ store, history }: Props) => {
 
   return (
     <Provider store={store}>
-      <WalletStoreProvider>
-        <ConnectedRouter history={history}>
-          <BaseStyles>
-            <Routes />
-          </BaseStyles>
-        </ConnectedRouter>
-      </WalletStoreProvider>
+      <TakerProvider>
+        <WalletStoreProvider>
+          <ConnectedRouter history={history}>
+            <BaseStyles>
+              <Routes />
+            </BaseStyles>
+          </ConnectedRouter>
+        </WalletStoreProvider>
+      </TakerProvider>
     </Provider>
   );
 };
