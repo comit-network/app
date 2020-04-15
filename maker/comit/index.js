@@ -12,12 +12,12 @@ const os = require("os");
 const path = require("path");
 const MakerStateMachine = require('./stateMachine');
 
-async function parsePropertiesList(swaps) {
-  const properties = await Promise.all(_.map(swaps, s => parseProperties(s)));
+async function fetchPropertiesOfList(swaps) {
+  const properties = await Promise.all(_.map(swaps, s => fetchProperties(s)));
   return properties;
 }
 
-async function parseProperties(swap) {
+async function fetchProperties(swap) {
   const { properties } = await swap.fetchDetails();
   return { url: swap.self, ...properties}
 }
@@ -25,13 +25,13 @@ async function parseProperties(swap) {
 async function getSwaps() {
   const maker = await getMaker();
   const newSwaps = await maker.comitClient.getNewSwaps();
-  const newSwapsProperties = await parsePropertiesList(newSwaps);
+  const newSwapsProperties = await fetchPropertiesOfList(newSwaps);
 
   const ongoingSwaps = await maker.comitClient.getOngoingSwaps();
-  const ongoingSwapsProperties = await parsePropertiesList(ongoingSwaps);
+  const ongoingSwapsProperties = await fetchPropertiesOfList(ongoingSwaps);
 
   const doneSwaps = await maker.comitClient.getDoneSwaps();
-  const doneSwapsProperties = await await parsePropertiesList(doneSwaps);
+  const doneSwapsProperties = await await fetchPropertiesOfList(doneSwaps);
 
   return [...newSwapsProperties, ...ongoingSwapsProperties, ...doneSwapsProperties];
 }
@@ -47,7 +47,7 @@ async function getPendingSwaps() { // Ignores Done
 async function findSwapById(swapId) {
   const maker = await getMaker();
   const s = await maker.comitClient.retrieveSwapById(swapId);
-  const properties = await parseProperties(s);
+  const properties = await fetchProperties(s);
   return properties;
 }
 

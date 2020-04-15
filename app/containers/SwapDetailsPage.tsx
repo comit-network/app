@@ -4,37 +4,37 @@ import { useParams, Link } from 'react-router-dom';
 import { Card, Box, Text, Heading, Button, Flex } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
-import { findSwapById, retrieveSwapById, TakerStateMachine } from '../comit';
+import { findSwapById, TakerStateMachine } from '../comit';
+import { useTaker } from '../hooks/useTaker';
 import useInterval from '../utils/useInterval';
 import SwapProgress from '../components/SwapProgress';
 
 export default function SwapDetailsPage() {
   const { id } = useParams();
   const [swap, setSwap] = useState();
+  const { taker, isTakerLoaded } = useTaker();
 
   useEffect(() => {
     async function fetchSwap(swapId) {
-      const properties = await findSwapById(swapId);
+      const properties = await findSwapById(taker, swapId);
       setSwap(properties);
     }
-    fetchSwap(id);
-  }, []);
+    if (isTakerLoaded) fetchSwap(id);
+  }, [isTakerLoaded]);
 
   // TODO: minimize use of find, use retrieve once instead and fetchDetails() after
   useInterval(() => {
-    async function fetchSwap(swapId) {
-      const properties = await findSwapById(swapId);
-      setSwap(properties);
-    }
     async function pollSwap(swapId) {
-      const swp = await retrieveSwapById(swapId);
+      const swp = await taker.comitClient.retrieveSwapById(swapId);
       const sm = new TakerStateMachine(swp);
       try {
         await sm.next();
       } catch (error) {
+        // TODO: display error to user
         console.log(error);
       }
-      await fetchSwap(swapId);
+      const properties = await findSwapById(taker, swapId);
+      setSwap(properties);
     }
 
     // TODO: debounce to one outgoing request at a time
@@ -43,9 +43,7 @@ export default function SwapDetailsPage() {
     const swapNotDone =
       _.get(swap, 'status') === 'NEW' ||
       _.get(swap, 'status') === 'IN_PROGRESS';
-    if (swapNotDone) {
-      pollSwap(id);
-    }
+    if (swapNotDone && isTakerLoaded) pollSwap(id);
   }, process.env.POLL_INTERVAL); // Poll every 5 seconds
 
   return (

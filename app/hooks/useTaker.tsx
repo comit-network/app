@@ -32,4 +32,5 @@ TakerProvider.propTypes = {
   children: PropTypes.node.isRequired
 };
 
+// Basically a useActor('1', 'Taker');
 export const useTaker = () => useContext(TakerContext);
