@@ -19,7 +19,7 @@ async function parsePropertiesList(swaps) {
 
 async function parseProperties(swap) {
   const { properties } = await swap.fetchDetails();
-  return properties
+  return { url: swap.self, ...properties}
 }
 
 async function getSwaps() {
