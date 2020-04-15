@@ -13,18 +13,20 @@ type Props = {
 // Note: currencies are hardcoded for now
 export default function SwapList(props: Props) {
   const { swaps } = props;
-  const [swapsProperties, setSwapsProperties] = useState([]);
+  // const [swapsProperties, setSwapsProperties] = useState([]);
 
-  useEffect(() => {
-    async function fetchSwaps() {
-      const properties = await Promise.all(_.map(swaps, s => s.fetchDetails()));
-      setSwapsProperties(properties);
-    }
-    fetchSwaps();
-  }, []);
+  // useEffect(() => {
+  //   async function fetchSwaps() {
+  //     console.log('fetchSwaps');
+  //     console.log(swaps);
+  //     const properties = await Promise.all(_.map(swaps, s => s.fetchDetails()));
+  //     console.log(properties);
+  //     setSwapsProperties(properties);
+  //   }
+  //   fetchSwaps();
+  // }, []);
 
-  // TODO: use self url instead of id?
-  const rows = _.map(swapsProperties, s => (
+  const rows = _.map(swaps, s => (
     <tr key={s.id}>
       <td>
         {(_.get(s, 'parameters.alpha_asset.quantity') / 10 ** 18)
