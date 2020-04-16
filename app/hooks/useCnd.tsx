@@ -17,7 +17,8 @@ export const CndProvider: React.FunctionComponent = ({ children }) => {
       setLoading(true);
 
       // TODO: initialize cnd
-      // setCnd(cnd);
+      const cnd = {};
+      setCnd(cnd);
 
       setLoading(false);
       setLoaded(true);

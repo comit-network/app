@@ -1,45 +1,17 @@
-import { createActor, EthereumWallet, InMemoryBitcoinWallet } from 'comit-sdk';
 import moment from 'moment';
 import { toSatoshi } from 'satoshi-bitcoin-ts';
 import toBaseUnit from '../utils';
 
 export { default as TakerStateMachine } from './stateMachine';
 
-export async function getNode(index, name) {
-  const bitcoinWallet = await InMemoryBitcoinWallet.newInstance(
-    'regtest',
-    process.env.BITCOIN_P2P_URI,
-    process.env[`BITCOIN_HD_KEY_${index}`]
-  );
-  await new Promise(resolve => setTimeout(resolve, 1000)); // TODO: why is this here
-
-  const ethereumWallet = new EthereumWallet(
-    process.env.ETHEREUM_NODE_HTTP_URL,
-    process.env[`ETHEREUM_KEY_${index}`]
-  );
-
-  return createActor(
-    bitcoinWallet,
-    ethereumWallet,
-    process.env[`HTTP_URL_CND_${index}`],
-    name
-  );
-}
-
-export async function getTaker() {
-  const taker = await getNode(1, 'Taker');
-  return taker;
-}
-
 // TODO: SDK should have this, should be wrapper of just plain this.cnd.getSwaps()
-export async function getSwaps() {
-  const taker = await getTaker();
-  const newSwaps = await taker.comitClient.getNewSwaps();
-  const ongoingSwaps = await taker.comitClient.getOngoingSwaps();
-  const doneSwaps = await taker.comitClient.getDoneSwaps();
+// export async function getSwaps(actor) {
+//   const newSwaps = await actor.comitClient.getNewSwaps();
+//   const ongoingSwaps = await actor.comitClient.getOngoingSwaps();
+//   const doneSwaps = await actor.comitClient.getDoneSwaps();
 
-  return [...newSwaps, ...ongoingSwaps, ...doneSwaps];
-}
+//   return [...newSwaps, ...ongoingSwaps, ...doneSwaps];
+// }
 
 export async function findSwapById(actor, swapId) {
   const swap = await actor.comitClient.retrieveSwapById(swapId);
@@ -80,6 +52,5 @@ export function buildSwap(
       address_hint: makerAddressHint
     }
   };
-  console.log(message);
   return message;
 }
