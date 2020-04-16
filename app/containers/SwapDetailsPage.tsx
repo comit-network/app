@@ -12,15 +12,15 @@ import SwapProgress from '../components/SwapProgress';
 export default function SwapDetailsPage() {
   const { id } = useParams();
   const [swap, setSwap] = useState();
-  const { taker, isTakerLoaded } = useTaker();
+  const { taker, loaded } = useTaker();
 
   useEffect(() => {
     async function fetchSwap(swapId) {
       const properties = await findSwapById(taker, swapId);
       setSwap(properties);
     }
-    if (isTakerLoaded) fetchSwap(id);
-  }, [isTakerLoaded]);
+    if (loaded) fetchSwap(id);
+  }, [loaded]);
 
   // TODO: minimize use of find, use retrieve once instead and fetchDetails() after
   useInterval(() => {
@@ -43,7 +43,7 @@ export default function SwapDetailsPage() {
     const swapNotDone =
       _.get(swap, 'status') === 'NEW' ||
       _.get(swap, 'status') === 'IN_PROGRESS';
-    if (swapNotDone && isTakerLoaded) pollSwap(id);
+    if (swapNotDone && loaded) pollSwap(id);
   }, process.env.POLL_INTERVAL); // Poll every 5 seconds
 
   return (

@@ -4,14 +4,22 @@ import { getTaker } from '../comit';
 
 export const TakerContext = createContext({});
 
+// TODO: can add props here for e.g. Ethereum wallet uris, cnd uris
+// ({ params, children })
 export const TakerProvider: React.FunctionComponent = ({ children }) => {
   const [taker, setTaker] = useState(null);
-  const [isLoading, setLoading] = useState(false);
-  const [isLoaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  // TODO: create useCnd hook
+  // TODO: create useBitcoinWallet hook
+  // TODO: create useEthereumWallet hook
 
   useEffect(() => {
     async function initializeTaker() {
       setLoading(true);
+
+      // TODO: port full getTaker code to here instead
       const t = await getTaker();
       setTaker(t);
       setLoading(false);
@@ -21,7 +29,7 @@ export const TakerProvider: React.FunctionComponent = ({ children }) => {
   }, []);
 
   // Public API
-  const value = { taker, isTakerLoading: isLoading, isTakerLoaded: isLoaded };
+  const value = { taker, loading, loaded };
 
   return (
     <TakerContext.Provider value={value}>{children}</TakerContext.Provider>

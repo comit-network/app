@@ -8,7 +8,7 @@ import { setBTCBalance, setDAIBalance, setETHBalance } from '../actions/wallet';
 
 export default function Wallet() {
   const { state, dispatch } = useWalletStore();
-  const { taker, isTakerLoaded } = useTaker();
+  const { taker, loaded } = useTaker();
 
   // TODO: refactor to useWallet hook?
   useEffect(() => {
@@ -27,8 +27,8 @@ export default function Wallet() {
       // TOFIX: For some reason the following line is needed for bitcoin balance to be displayed correctly
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    if (isTakerLoaded) fetchBalances();
-  }, [isTakerLoaded]);
+    if (loaded) fetchBalances();
+  }, [loaded]);
 
   return (
     <Flex justifyContent="space-between" alignItems="center" p={2}>
