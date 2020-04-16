@@ -21,7 +21,7 @@ type Props = {
 export default function SwapForm(props: Props) {
   const { rate, maker, onSwapSent } = props;
 
-  const { taker, isTakerLoaded } = useTaker();
+  const { taker, loaded } = useTaker();
   const [formValidated, setFormValidated] = useState(false);
   const [BTCAmount, setBTCAmount] = useState(0);
   const [DAIAmount, setDAIAmount] = useState(0);
@@ -92,7 +92,7 @@ export default function SwapForm(props: Props) {
     onSwapSent(swapId);
   };
 
-  if (!isTakerLoaded) {
+  if (!loaded) {
     return (
       <Box>
         <Loader color="blue" />

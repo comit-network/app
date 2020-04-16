@@ -35,6 +35,8 @@ interface ContextValue {
 
 export const WalletStoreContext = createContext<ContextValue | null>(null);
 
+// NOTE: can add props here
+// ({ params, children })
 export const WalletStoreProvider: React.FunctionComponent = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, defaultState);
   const value = { state, dispatch };
