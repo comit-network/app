@@ -10,7 +10,8 @@ import {
   Loader
 } from 'rimble-ui';
 import { buildSwap } from '../comit';
-import { useTaker } from '../hooks/useTaker';
+import { useEthereumWallet } from '../hooks/useEthereumWallet';
+import { useComitClient } from '../hooks/useComitClient';
 
 const BTC_DECIMALS = 8;
 
@@ -21,7 +22,9 @@ type Props = {
 export default function SwapForm(props: Props) {
   const { rate, maker, onSwapSent } = props;
 
-  const { taker, loaded } = useTaker();
+  const { wallet: ethereumWallet, loaded: walletLoaded } = useEthereumWallet();
+  const { comitClient, loaded: clientLoaded } = useComitClient();
+
   const [formValidated, setFormValidated] = useState(false);
   const [BTCAmount, setBTCAmount] = useState(0);
   const [DAIAmount, setDAIAmount] = useState(0);
@@ -75,16 +78,19 @@ export default function SwapForm(props: Props) {
   });
 
   const handleSubmit = async e => {
+    // TODO: display submission errors
+
     e.preventDefault();
+    const refundAddress = await ethereumWallet.getAccount();
     const payload = buildSwap(
       maker.peerId,
       maker.addressHint,
-      taker.ETHAddress,
+      refundAddress,
       DAIAmount,
       BTCAmount
     );
     setLoading(true);
-    const swap = await taker.comitClient.sendSwap(payload);
+    const swap = await comitClient.sendSwap(payload);
     const {
       properties: { id: swapId }
     } = await swap.fetchDetails();
@@ -92,7 +98,7 @@ export default function SwapForm(props: Props) {
     onSwapSent(swapId);
   };
 
-  if (!loaded) {
+  if (!walletLoaded || !clientLoaded) {
     return (
       <Box>
         <Loader color="blue" />
