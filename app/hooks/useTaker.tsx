@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { createActor, EthereumWallet, InMemoryBitcoinWallet } from 'comit-sdk';
+import { createActor } from 'comit-sdk';
+import { useBitcoinWallet } from './useBitcoinWallet';
+import { useEthereumWallet } from './useEthereumWallet';
 
 export const TakerContext = createContext({});
 
@@ -8,29 +10,21 @@ export const TakerContext = createContext({});
 // ({ params, children })
 // TODO: extract the process.env references below into props
 export const TakerProvider: React.FunctionComponent = ({ children }) => {
+  const {
+    wallet: bitcoinWallet,
+    loaded: bitcoinWalletLoaded
+  } = useBitcoinWallet();
+  const {
+    wallet: ethereumWallet,
+    loaded: ethereumWalletLoaded
+  } = useEthereumWallet();
   const [taker, setTaker] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  // TODO: create useCnd hook
-  // TODO: create useBitcoinWallet hook
-  // TODO: create useEthereumWallet hook
-
   useEffect(() => {
     async function initializeTaker() {
       setLoading(true);
-
-      const bitcoinWallet = await InMemoryBitcoinWallet.newInstance(
-        'regtest',
-        process.env.BITCOIN_P2P_URI,
-        process.env.BITCOIN_HD_KEY_1
-      );
-      await new Promise(resolve => setTimeout(resolve, 1000)); // bitcoin wallet workaround
-
-      const ethereumWallet = new EthereumWallet(
-        process.env.ETHEREUM_NODE_HTTP_URL,
-        process.env.ETHEREUM_KEY_1
-      );
 
       const t = await createActor(
         bitcoinWallet,
@@ -43,8 +37,8 @@ export const TakerProvider: React.FunctionComponent = ({ children }) => {
       setLoading(false);
       setLoaded(true);
     }
-    initializeTaker();
-  }, []);
+    if (bitcoinWalletLoaded && ethereumWalletLoaded) initializeTaker();
+  }, [bitcoinWalletLoaded, ethereumWalletLoaded]);
 
   // Public API
   const value = { taker, loading, loaded };

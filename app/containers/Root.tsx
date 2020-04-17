@@ -9,6 +9,8 @@ import { Store } from '../reducers/types';
 import Routes from '../Routes';
 import { WalletStoreProvider } from '../hooks/useWalletStore';
 import { TakerProvider } from '../hooks/useTaker';
+import { BitcoinWalletProvider } from '../hooks/useBitcoinWallet';
+import { EthereumWalletProvider } from '../hooks/useEthereumWallet';
 
 type Props = {
   store: Store;
@@ -20,15 +22,19 @@ const Root = ({ store, history }: Props) => {
 
   return (
     <Provider store={store}>
-      <TakerProvider>
-        <WalletStoreProvider>
-          <ConnectedRouter history={history}>
-            <BaseStyles>
-              <Routes />
-            </BaseStyles>
-          </ConnectedRouter>
-        </WalletStoreProvider>
-      </TakerProvider>
+      <BitcoinWalletProvider>
+        <EthereumWalletProvider>
+          <TakerProvider>
+            <WalletStoreProvider>
+              <ConnectedRouter history={history}>
+                <BaseStyles>
+                  <Routes />
+                </BaseStyles>
+              </ConnectedRouter>
+            </WalletStoreProvider>
+          </TakerProvider>
+        </EthereumWalletProvider>
+      </BitcoinWalletProvider>
     </Provider>
   );
 };
