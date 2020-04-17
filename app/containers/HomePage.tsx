@@ -1,17 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, Heading } from 'rimble-ui';
-// import { getSwaps } from '../comit';
+import { getSwaps } from '../comit';
 import SwapForm from './SwapForm';
 import SwapList from '../components/SwapList';
 import WalletBalances from './WalletBalances';
 import MakerService from '../services/makerService';
+import { useBitcoinWallet } from '../hooks/useBitcoinWallet';
+import { useEthereumWallet } from '../hooks/useEthereumWallet';
+import { useCnd } from '../hooks/useCnd';
 
 type Props = {
   history: History;
 };
 
 export default function HomePage(props: Props) {
+  // TODO: refactor to useMakerService
   const makerService = new MakerService(process.env.MAKER_URL);
+
+  const {
+    wallet: bitcoinWallet,
+    loaded: bitcoinWalletLoaded
+  } = useBitcoinWallet();
+  const {
+    wallet: ethereumWallet,
+    loaded: ethereumWalletLoaded
+  } = useEthereumWallet();
+  const { cnd, loaded: cndLoaded } = useCnd();
+  const fullyLoaded = cndLoaded && bitcoinWalletLoaded && ethereumWalletLoaded;
 
   // TODO: refactor below to use hooks, enable switching makers eventually
   const [maker, setMaker] = useState({});
@@ -33,15 +48,11 @@ export default function HomePage(props: Props) {
 
   useEffect(() => {
     async function fetchSwaps() {
-      console.log('fetchSwaps');
-      // Retrieving swaps via comitClient below does not work
-      // const swps2 = await getSwaps();
-      // console.log(swps2);
-      const swps = await makerService.getSwaps();
+      const swps = await getSwaps(cnd, bitcoinWallet, ethereumWallet);
       setSwaps(swps);
     }
-    fetchSwaps();
-  }, []);
+    if (fullyLoaded) fetchSwaps();
+  }, [cndLoaded, bitcoinWalletLoaded, ethereumWalletLoaded]);
 
   useEffect(() => {
     async function fetchRate() {

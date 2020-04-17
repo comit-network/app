@@ -5,6 +5,7 @@ import { Box, Icon, Text, Table, Pill, Button } from 'rimble-ui';
 import { Link } from 'react-router-dom';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
+import { fetchProperties } from '../comit';
 
 type Props = {
   swaps: Swap[];
@@ -12,21 +13,21 @@ type Props = {
 
 // Note: currencies are hardcoded for now
 export default function SwapList(props: Props) {
+  // TODO: Since Swap is mutable, instead of passing as props, should be
+  // loaded into a global context instead
+
   const { swaps } = props;
-  // const [swapsProperties, setSwapsProperties] = useState([]);
+  const [swapsProperties, setSwapsProperties] = useState([]);
 
-  // useEffect(() => {
-  //   async function fetchSwaps() {
-  //     console.log('fetchSwaps');
-  //     console.log(swaps);
-  //     const properties = await Promise.all(_.map(swaps, s => s.fetchDetails()));
-  //     console.log(properties);
-  //     setSwapsProperties(properties);
-  //   }
-  //   fetchSwaps();
-  // }, []);
+  useEffect(() => {
+    async function load() {
+      const properties = await fetchProperties(swaps);
+      setSwapsProperties(properties);
+    }
+    load();
+  }, [swaps]);
 
-  const rows = _.map(swaps, s => (
+  const rows = _.map(swapsProperties, s => (
     <tr key={s.id}>
       <td>
         {(_.get(s, 'parameters.alpha_asset.quantity') / 10 ** 18)
