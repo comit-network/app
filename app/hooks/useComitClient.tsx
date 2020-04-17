@@ -18,7 +18,7 @@ export const ComitClientProvider: React.FunctionComponent = ({ children }) => {
   } = useEthereumWallet();
   const { cnd, loaded: cndLoaded } = useCnd();
 
-  const [client, setComitClient] = useState(null);
+  const [comitClient, setComitClient] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -39,7 +39,7 @@ export const ComitClientProvider: React.FunctionComponent = ({ children }) => {
   }, [bitcoinWalletLoaded, ethereumWalletLoaded, cndLoaded]);
 
   // Public API
-  const value = { client, loading, loaded };
+  const value = { comitClient, loading, loaded };
 
   return (
     <ComitClientContext.Provider value={value}>

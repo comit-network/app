@@ -19,10 +19,11 @@ export async function findSwapById(actor, swapId) {
   return properties;
 }
 
+// Note: this is only for Alpha: DAI and Beta: BTC
 export function buildSwap(
   makerPeerId,
   makerAddressHint,
-  takerETHAddress,
+  takerRefundAddress,
   daiAmount,
   btcAmount
 ) {
@@ -44,7 +45,7 @@ export function buildSwap(
       name: 'bitcoin',
       quantity: toSatoshi(btcAmount).toString()
     },
-    alpha_ledger_refund_identity: takerETHAddress,
+    alpha_ledger_refund_identity: takerRefundAddress,
     alpha_expiry: moment().unix() + 7200,
     beta_expiry: moment().unix() + 3600,
     peer: {
