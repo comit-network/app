@@ -8,7 +8,6 @@ import { BaseStyles } from 'rimble-ui';
 import { Store } from '../reducers/types';
 import Routes from '../Routes';
 import { WalletStoreProvider } from '../hooks/useWalletStore';
-import { TakerProvider } from '../hooks/useTaker';
 import { BitcoinWalletProvider } from '../hooks/useBitcoinWallet';
 import { EthereumWalletProvider } from '../hooks/useEthereumWallet';
 import { CndProvider } from '../hooks/useCnd';
@@ -28,15 +27,13 @@ const Root = ({ store, history }: Props) => {
         <EthereumWalletProvider>
           <CndProvider url={process.env.HTTP_URL_CND_1}>
             <ComitClientProvider>
-              <TakerProvider>
-                <WalletStoreProvider>
-                  <ConnectedRouter history={history}>
-                    <BaseStyles>
-                      <Routes />
-                    </BaseStyles>
-                  </ConnectedRouter>
-                </WalletStoreProvider>
-              </TakerProvider>
+              <WalletStoreProvider>
+                <ConnectedRouter history={history}>
+                  <BaseStyles>
+                    <Routes />
+                  </BaseStyles>
+                </ConnectedRouter>
+              </WalletStoreProvider>
             </ComitClientProvider>
           </CndProvider>
         </EthereumWalletProvider>
