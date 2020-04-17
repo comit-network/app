@@ -17,6 +17,9 @@ export const EthereumWalletProvider: React.FunctionComponent = ({
     function initializeEthereumWallet() {
       setLoading(true);
 
+      // Needs to support multiple providers
+      // TODO: https://github.com/NoahZinsmeister/web3-react
+      // TODO: https://github.com/aragon/use-wallet
       const w = new EthereumWallet(
         process.env.ETHEREUM_NODE_HTTP_URL,
         process.env.ETHEREUM_KEY_1

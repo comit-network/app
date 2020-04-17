@@ -4,21 +4,17 @@ import { Cnd } from 'comit-sdk';
 
 export const CndContext = createContext({});
 
-// TODO: can add props here for e.g. Ethereum wallet uris, cnd uris
-// ({ params, children })
-export const CndProvider: React.FunctionComponent = ({ children }) => {
-  const [taker, setCnd] = useState(null);
+export const CndProvider: React.FunctionComponent = ({ url, children }) => {
+  const [cnd, setCnd] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  // TODO: create useCnd hook
-
   useEffect(() => {
-    async function initializeCnd() {
+    function initializeCnd() {
       setLoading(true);
 
-      const cnd = new Cnd(process.env.HTTP_URL_CND_1);
-      setCnd(cnd);
+      const c = new Cnd(url);
+      setCnd(c);
 
       setLoading(false);
       setLoaded(true);
@@ -27,13 +23,14 @@ export const CndProvider: React.FunctionComponent = ({ children }) => {
   }, []);
 
   // Public API
-  const value = { taker, loading, loaded };
+  const value = { cnd, loading, loaded };
 
   return <CndContext.Provider value={value}>{children}</CndContext.Provider>;
 };
 
 CndProvider.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  url: PropTypes.string.isRequired
 };
 
 export const useCnd = () => useContext(CndContext);
