@@ -4,28 +4,29 @@ import { useParams, Link } from 'react-router-dom';
 import { Card, Box, Text, Heading, Button, Flex } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
-import { findSwapById, TakerStateMachine } from '../comit';
-import { useTaker } from '../hooks/useTaker';
+import { fetchDetailsById, TakerStateMachine } from '../comit';
+import { useComitClient } from '../hooks/useComitClient';
 import useInterval from '../utils/useInterval';
 import SwapProgress from '../components/SwapProgress';
 
 export default function SwapDetailsPage() {
   const { id } = useParams();
+  const { comitClient, loaded: clientLoaded } = useComitClient();
+
   const [swap, setSwap] = useState();
-  const { taker, loaded } = useTaker();
 
   useEffect(() => {
     async function fetchSwap(swapId) {
-      const properties = await findSwapById(taker, swapId);
+      const properties = await fetchDetailsById(comitClient, swapId);
       setSwap(properties);
     }
-    if (loaded) fetchSwap(id);
-  }, [loaded]);
+    if (clientLoaded) fetchSwap(id);
+  }, [clientLoaded]);
 
   // TODO: minimize use of find, use retrieve once instead and fetchDetails() after
   useInterval(() => {
     async function pollSwap(swapId) {
-      const swp = await taker.comitClient.retrieveSwapById(swapId);
+      const swp = await comitClient.retrieveSwapById(swapId);
       const sm = new TakerStateMachine(swp);
       try {
         await sm.next();
@@ -33,7 +34,7 @@ export default function SwapDetailsPage() {
         // TODO: display error to user
         console.log(error);
       }
-      const properties = await findSwapById(taker, swapId);
+      const properties = await fetchDetailsById(comitClient, swapId);
       setSwap(properties);
     }
 
@@ -43,7 +44,7 @@ export default function SwapDetailsPage() {
     const swapNotDone =
       _.get(swap, 'status') === 'NEW' ||
       _.get(swap, 'status') === 'IN_PROGRESS';
-    if (swapNotDone && loaded) pollSwap(id);
+    if (swapNotDone && clientLoaded) pollSwap(id);
   }, process.env.POLL_INTERVAL); // Poll every 5 seconds
 
   return (
