@@ -3,7 +3,7 @@ import { Box, Card, Heading } from 'rimble-ui';
 // import { getSwaps } from '../comit';
 import SwapForm from './SwapForm';
 import SwapList from '../components/SwapList';
-import Wallet from './Wallet';
+import WalletBalances from './WalletBalances';
 import MakerService from '../services/makerService';
 
 type Props = {
@@ -58,7 +58,7 @@ export default function HomePage(props: Props) {
 
   return (
     <Box>
-      <Wallet />
+      <WalletBalances />
 
       <Card>
         <Heading textAlign="center">Swap DAI for BTC</Heading>
