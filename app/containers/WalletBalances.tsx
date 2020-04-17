@@ -3,23 +3,32 @@ import { Text, Icon, Flex } from 'rimble-ui';
 import { Btc, Eth, Dai } from '@rimble/icons';
 import { formatEther } from 'ethers/utils';
 import { useWalletStore } from '../hooks/useWalletStore';
-import { useTaker } from '../hooks/useTaker';
+import { useEthereumWallet } from '../hooks/useEthereumWallet';
+import { useBitcoinWallet } from '../hooks/useBitcoinWallet';
 import { setBTCBalance, setDAIBalance, setETHBalance } from '../actions/wallet';
 
-export default function Wallet() {
+export default function WalletBalances() {
   const { state, dispatch } = useWalletStore();
-  const { taker, loaded } = useTaker();
+  const {
+    wallet: ethereumWallet,
+    loaded: ethereumWalletLoaded
+  } = useEthereumWallet();
+  const {
+    wallet: bitcoinWallet,
+    loaded: bitcoinWalletLoaded
+  } = useBitcoinWallet();
 
-  // TODO: refactor to useWallet hook?
+  // TODO: should poll regularly
+  // https://github.com/aragon/use-wallet/blob/5eab5bde3a3517be5d0d78966328d5c86355b199/src/index.js#L78-L114
   useEffect(() => {
     async function fetchBalances() {
-      const bitcoinBalance = await taker.bitcoinWallet.getBalance();
+      const bitcoinBalance = await bitcoinWallet.getBalance();
       dispatch(setBTCBalance(bitcoinBalance));
 
-      const ethBalance = await taker.ethereumWallet.getBalance();
+      const ethBalance = await ethereumWallet.getBalance();
       dispatch(setETHBalance(parseFloat(formatEther(ethBalance))));
 
-      const erc20Balance = await taker.ethereumWallet.getErc20Balance(
+      const erc20Balance = await ethereumWallet.getErc20Balance(
         process.env.ERC20_CONTRACT_ADDRESS
       );
       dispatch(setDAIBalance(erc20Balance.toNumber()));
@@ -27,8 +36,8 @@ export default function Wallet() {
       // TOFIX: For some reason the following line is needed for bitcoin balance to be displayed correctly
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    if (loaded) fetchBalances();
-  }, [loaded]);
+    if (ethereumWalletLoaded && bitcoinWalletLoaded) fetchBalances();
+  }, [ethereumWalletLoaded, bitcoinWalletLoaded]);
 
   return (
     <Flex justifyContent="space-between" alignItems="center" p={2}>
