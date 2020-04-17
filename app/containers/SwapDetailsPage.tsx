@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Card, Box, Text, Heading, Button, Flex } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
-import { fetchDetailsById, TakerStateMachine } from '../comit';
+import { fetchPropertiesById, TakerStateMachine } from '../comit';
 import { useComitClient } from '../hooks/useComitClient';
 import useInterval from '../utils/useInterval';
 import SwapProgress from '../components/SwapProgress';
@@ -17,7 +17,7 @@ export default function SwapDetailsPage() {
 
   useEffect(() => {
     async function fetchSwap(swapId) {
-      const properties = await fetchDetailsById(comitClient, swapId);
+      const properties = await fetchPropertiesById(comitClient, swapId);
       setSwap(properties);
     }
     if (clientLoaded) fetchSwap(id);
@@ -34,7 +34,7 @@ export default function SwapDetailsPage() {
         // TODO: display error to user
         console.log(error);
       }
-      const properties = await fetchDetailsById(comitClient, swapId);
+      const properties = await fetchPropertiesById(comitClient, swapId);
       setSwap(properties);
     }
 

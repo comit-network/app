@@ -1,19 +1,46 @@
+import _ from 'lodash';
 import moment from 'moment';
 import { toSatoshi } from 'satoshi-bitcoin-ts';
+import { Swap } from 'comit-sdk';
 import toBaseUnit from '../utils';
 
 export { default as TakerStateMachine } from './stateMachine';
 
-// TODO: SDK should have this, should be wrapper of just plain this.cnd.getSwaps()
-// export async function getSwaps(actor) {
-//   const newSwaps = await actor.comitClient.getNewSwaps();
-//   const ongoingSwaps = await actor.comitClient.getOngoingSwaps();
-//   const doneSwaps = await actor.comitClient.getDoneSwaps();
+function newSwap(swap, cnd, bitcoinWallet, ethereumWallet) {
+  if (!bitcoinWallet) {
+    throw new Error('BitcoinWallet is not set.');
+  }
 
-//   return [...newSwaps, ...ongoingSwaps, ...doneSwaps];
-// }
+  if (!ethereumWallet) {
+    throw new Error('EthereumWallet is not set.');
+  }
 
-export async function fetchDetailsById(client, swapId) {
+  return new Swap(
+    cnd,
+    swap.links.find(link => link.rel.includes('self')).href,
+    { bitcoin: bitcoinWallet, ethereum: ethereumWallet }
+  );
+}
+
+// This function should be part of the SDK
+export async function getSwaps(cnd, bitcoinWallet, ethereumWallet) {
+  const swapSubEntities = await cnd.getSwaps();
+  const swaps = swapSubEntities.map(swap =>
+    newSwap(swap, cnd, bitcoinWallet, ethereumWallet)
+  );
+  return swaps;
+}
+
+export async function fetchProperties(swaps) {
+  const result = await Promise.all(_.map(swaps, s => s.fetchDetails()));
+  const propertiesList = _.map(result, details => {
+    const { properties } = details;
+    return properties;
+  });
+  return propertiesList;
+}
+
+export async function fetchPropertiesById(client, swapId) {
   const swap = await client.retrieveSwapById(swapId);
   const { properties } = await swap.fetchDetails();
   return properties;
