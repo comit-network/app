@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Cnd } from 'comit-sdk';
 
 export const CndContext = createContext({});
 
@@ -16,8 +17,7 @@ export const CndProvider: React.FunctionComponent = ({ children }) => {
     async function initializeCnd() {
       setLoading(true);
 
-      // TODO: initialize cnd
-      const cnd = {};
+      const cnd = new Cnd(process.env.HTTP_URL_CND_1);
       setCnd(cnd);
 
       setLoading(false);
