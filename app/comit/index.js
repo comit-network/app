@@ -13,8 +13,8 @@ export { default as TakerStateMachine } from './stateMachine';
 //   return [...newSwaps, ...ongoingSwaps, ...doneSwaps];
 // }
 
-export async function findSwapById(actor, swapId) {
-  const swap = await actor.comitClient.retrieveSwapById(swapId);
+export async function fetchDetailsById(client, swapId) {
+  const swap = await client.retrieveSwapById(swapId);
   const { properties } = await swap.fetchDetails();
   return properties;
 }
