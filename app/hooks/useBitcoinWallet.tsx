@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { InMemoryBitcoinWallet } from 'comit-sdk';
 
 export const BitcoinWalletContext = createContext({});
 
@@ -8,19 +9,22 @@ export const BitcoinWalletContext = createContext({});
 export const BitcoinWalletProvider: React.FunctionComponent = ({
   children
 }) => {
-  const [taker, setBitcoinWallet] = useState(null);
+  const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
-
-  // TODO: create useBitcoinWallet hook
 
   useEffect(() => {
     async function initializeBitcoinWallet() {
       setLoading(true);
 
-      // TODO: initialize wallet
-      const wallet = {};
-      setBitcoinWallet(wallet);
+      const w = await InMemoryBitcoinWallet.newInstance(
+        'regtest',
+        process.env.BITCOIN_P2P_URI,
+        process.env.BITCOIN_HD_KEY_1
+      );
+      await new Promise(resolve => setTimeout(resolve, 1000)); // bitcoin wallet workaround
+
+      setWallet(w);
 
       setLoading(false);
       setLoaded(true);
@@ -29,7 +33,7 @@ export const BitcoinWalletProvider: React.FunctionComponent = ({
   }, []);
 
   // Public API
-  const value = { taker, loading, loaded };
+  const value = { wallet, loading, loaded };
 
   return (
     <BitcoinWalletContext.Provider value={value}>

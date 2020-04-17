@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { EthereumWallet } from 'comit-sdk';
 
 export const EthereumWalletContext = createContext({});
 
@@ -8,19 +9,19 @@ export const EthereumWalletContext = createContext({});
 export const EthereumWalletProvider: React.FunctionComponent = ({
   children
 }) => {
-  const [taker, setEthereumWallet] = useState(null);
+  const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  // TODO: create useEthereumWallet hook
-
   useEffect(() => {
-    async function initializeEthereumWallet() {
+    function initializeEthereumWallet() {
       setLoading(true);
 
-      // TODO: initialize wallet
-      const wallet = {};
-      setEthereumWallet(wallet);
+      const w = new EthereumWallet(
+        process.env.ETHEREUM_NODE_HTTP_URL,
+        process.env.ETHEREUM_KEY_1
+      );
+      setWallet(w);
 
       setLoading(false);
       setLoaded(true);
@@ -29,7 +30,7 @@ export const EthereumWalletProvider: React.FunctionComponent = ({
   }, []);
 
   // Public API
-  const value = { taker, loading, loaded };
+  const value = { wallet, loading, loaded };
 
   return (
     <EthereumWalletContext.Provider value={value}>
