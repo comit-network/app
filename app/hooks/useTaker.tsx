@@ -32,7 +32,7 @@ export const TakerProvider: React.FunctionComponent = ({ children }) => {
         process.env.ETHEREUM_KEY_1
       );
 
-      const t = createActor(
+      const t = await createActor(
         bitcoinWallet,
         ethereumWallet,
         process.env.HTTP_URL_CND_1,
