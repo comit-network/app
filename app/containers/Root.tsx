@@ -11,6 +11,8 @@ import { WalletStoreProvider } from '../hooks/useWalletStore';
 import { TakerProvider } from '../hooks/useTaker';
 import { BitcoinWalletProvider } from '../hooks/useBitcoinWallet';
 import { EthereumWalletProvider } from '../hooks/useEthereumWallet';
+import { CndProvider } from '../hooks/useCnd';
+import { ComitClientProvider } from '../hooks/useComitClient';
 
 type Props = {
   store: Store;
@@ -24,15 +26,19 @@ const Root = ({ store, history }: Props) => {
     <Provider store={store}>
       <BitcoinWalletProvider>
         <EthereumWalletProvider>
-          <TakerProvider>
-            <WalletStoreProvider>
-              <ConnectedRouter history={history}>
-                <BaseStyles>
-                  <Routes />
-                </BaseStyles>
-              </ConnectedRouter>
-            </WalletStoreProvider>
-          </TakerProvider>
+          <CndProvider url={process.env.HTTP_URL_CND_1}>
+            <ComitClientProvider>
+              <TakerProvider>
+                <WalletStoreProvider>
+                  <ConnectedRouter history={history}>
+                    <BaseStyles>
+                      <Routes />
+                    </BaseStyles>
+                  </ConnectedRouter>
+                </WalletStoreProvider>
+              </TakerProvider>
+            </ComitClientProvider>
+          </CndProvider>
         </EthereumWalletProvider>
       </BitcoinWalletProvider>
     </Provider>
