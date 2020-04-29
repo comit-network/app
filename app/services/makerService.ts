@@ -57,8 +57,7 @@ export default class MakerService {
       const res = await fetch(`${this.url}/rates`);
       const { rates } = await res.json();
       const rate = _.get(rates, pair);
-      // return rate;
-      return Math.random();
+      return rate;
     } catch (error) {
       throw new Error(`getRates failed: ${error.toString()}`);
     }
