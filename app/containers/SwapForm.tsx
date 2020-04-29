@@ -15,6 +15,7 @@ import { buildSwap } from '../comit';
 import MakerService from '../services/makerService';
 import { useEthereumWallet } from '../hooks/useEthereumWallet';
 import { useComitClient } from '../hooks/useComitClient';
+import useFetch from '../hooks/useFetch';
 
 const BTC_DECIMALS = 8;
 
@@ -23,10 +24,12 @@ type Props = {
 };
 
 export default function SwapForm(props: Props) {
-  const { maker, onSwapSent } = props;
+  const { onSwapSent } = props;
 
-  // TODO: refactor to useMakerService
   const makerService = new MakerService(process.env.MAKER_URL);
+  const { isLoading: isLoadingMaker, data: maker } = useFetch(async () =>
+    makerService.getIdentity()
+  );
 
   const [rate, setRate] = useState('Loading...');
   const [rateFefreshFlag, refreshRate] = useReducer(state => state + 1, 0);
@@ -37,7 +40,7 @@ export default function SwapForm(props: Props) {
   const [formValidated, setFormValidated] = useState(false);
   const [BTCAmount, setBTCAmount] = useState(0);
   const [DAIAmount, setDAIAmount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [sendingSwap, setSendingSwap] = useState(false);
 
   const convertToDAI = btc => {
     return btc * (1 / rate);
@@ -89,10 +92,19 @@ export default function SwapForm(props: Props) {
   useEffect(() => {
     async function fetchRate() {
       const rates = await makerService.getRates();
-      setRate(rates.dai.btc);
+      // setRate(rates.dai.btc);
+      setRate(Math.random());
     }
     fetchRate();
   }, [rateFefreshFlag]);
+
+  useEffect(() => {
+    async function recalculate() {
+      console.log('recalculate');
+      setBTCAmount(convertToBTC(DAIAmount));
+    }
+    if (BTCAmount > 0) recalculate();
+  }, [rate]);
 
   const handleSubmit = async e => {
     // TODO: display submission errors
@@ -105,12 +117,12 @@ export default function SwapForm(props: Props) {
       DAIAmount,
       BTCAmount
     );
-    setLoading(true);
+    setSendingSwap(true);
     const swap = await comitClient.sendSwap(payload);
     const {
       properties: { id: swapId }
     } = await swap.fetchDetails();
-    setLoading(false);
+    setSendingSwap(false);
     onSwapSent(swapId);
   };
 
@@ -159,10 +171,10 @@ export default function SwapForm(props: Props) {
         <Button
           style={{ width: '100%' }}
           type="submit"
-          disabled={!formValidated || loading}
+          disabled={!formValidated || sendingSwap || isLoadingMaker}
           onClick={handleSubmit}
         >
-          {loading ? <Loader color="white" /> : null} Start Swap
+          {sendingSwap ? <Loader color="white" /> : null} Start Swap
         </Button>
       </Form>
     </Box>
