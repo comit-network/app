@@ -30,9 +30,11 @@ export default function SwapForm(props: Props) {
   const { isLoading: isLoadingMaker, data: maker } = useFetch(async () =>
     makerService.getIdentity()
   );
-
-  const [rate, setRate] = useState('Loading...');
-  const [rateFefreshFlag, refreshRate] = useReducer(state => state + 1, 0);
+  const {
+    isLoading: isLoadingRate,
+    data: rate,
+    refresh: refreshRate
+  } = useFetch(async () => makerService.getRate('dai.btc'));
 
   const { wallet: ethereumWallet, loaded: walletLoaded } = useEthereumWallet();
   const { comitClient, loaded: clientLoaded } = useComitClient();
@@ -90,17 +92,7 @@ export default function SwapForm(props: Props) {
   });
 
   useEffect(() => {
-    async function fetchRate() {
-      const rates = await makerService.getRates();
-      // setRate(rates.dai.btc);
-      setRate(Math.random());
-    }
-    fetchRate();
-  }, [rateFefreshFlag]);
-
-  useEffect(() => {
     async function recalculate() {
-      console.log('recalculate');
       setBTCAmount(convertToBTC(DAIAmount));
     }
     if (BTCAmount > 0) recalculate();
@@ -143,6 +135,7 @@ export default function SwapForm(props: Props) {
               <Input
                 type="number"
                 required
+                disabled={isLoadingRate}
                 onChange={handleDAIChange}
                 value={DAIAmount}
                 width={1}
@@ -154,6 +147,7 @@ export default function SwapForm(props: Props) {
               <Input
                 type="number"
                 required
+                disabled={isLoadingRate}
                 onChange={onBTCChange}
                 value={BTCAmount}
                 width={1}
@@ -165,13 +159,19 @@ export default function SwapForm(props: Props) {
         <Flash my={3} variant="info">
           <Flex justifyContent="space-between">
             <Text>Rate: 1 BTC = {(1 / rate).toFixed(4)} DAI</Text>
-            <Icon name="Refresh" onClick={refreshRate} />
+            {isLoadingRate ? (
+              <Loader />
+            ) : (
+              <Icon name="Refresh" onClick={refreshRate} />
+            )}
           </Flex>
         </Flash>
         <Button
           style={{ width: '100%' }}
           type="submit"
-          disabled={!formValidated || sendingSwap || isLoadingMaker}
+          disabled={
+            !formValidated || sendingSwap || isLoadingMaker || isLoadingRate
+          }
           onClick={handleSubmit}
         >
           {sendingSwap ? <Loader color="white" /> : null} Start Swap

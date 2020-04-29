@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export default class MakerService {
   constructor(url) {
     this.url = url;
@@ -35,13 +37,28 @@ export default class MakerService {
   }
 
   /**
-   * Returns the maker's swaps.
+   * Returns the maker's rates.
    */
   async getRates() {
     try {
       const res = await fetch(`${this.url}/rates`);
       const { rates } = await res.json();
       return rates;
+    } catch (error) {
+      throw new Error(`getRates failed: ${error.toString()}`);
+    }
+  }
+
+  /**
+   * Returns the maker's rates of a pair e.g. 'dai.btc'.
+   */
+  async getRate(pair) {
+    try {
+      const res = await fetch(`${this.url}/rates`);
+      const { rates } = await res.json();
+      const rate = _.get(rates, pair);
+      // return rate;
+      return Math.random();
     } catch (error) {
       throw new Error(`getRates failed: ${error.toString()}`);
     }
