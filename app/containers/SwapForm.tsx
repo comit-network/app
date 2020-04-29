@@ -33,8 +33,8 @@ export default function SwapForm(props: Props) {
   const {
     isLoading: isLoadingRate,
     data: rate,
-    refresh: refreshRate
-  } = useFetch(async () => makerService.getRate('dai.btc'));
+    refetch: refreshRate
+  } = useFetch(async () => makerService.getRate('dai.btc'), 'Loading...');
 
   const { wallet: ethereumWallet, loaded: walletLoaded } = useEthereumWallet();
   const { comitClient, loaded: clientLoaded } = useComitClient();

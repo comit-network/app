@@ -19,20 +19,23 @@ const dataFetchReducer = (state, action) => {
       return {
         ...state,
         isLoading: false,
-        isError: true
+        isError: true,
+        error: action.error
       };
     default:
       throw new Error();
   }
 };
 
+// Hook for data fetching with built-in loading flags, error flags, and refetch capability.
 const useFetch = (func, initialData) => {
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: false,
     isError: false,
-    data: initialData
+    data: initialData,
+    error: null
   });
-  const [refreshFlag, refresh] = useReducer(r => r + 1, 0);
+  const [refetchFlag, refetch] = useReducer(r => r + 1, 0);
 
   useEffect(() => {
     let didCancel = false;
@@ -48,7 +51,7 @@ const useFetch = (func, initialData) => {
         }
       } catch (error) {
         if (!didCancel) {
-          dispatch({ type: 'FETCH_FAILURE' });
+          dispatch({ type: 'FETCH_FAILURE', error });
         }
       }
     };
@@ -58,9 +61,9 @@ const useFetch = (func, initialData) => {
     return () => {
       didCancel = true;
     };
-  }, [refreshFlag]); // TODO: enable refresh
+  }, [refetchFlag]);
 
-  return { ...state, refresh };
+  return { ...state, refetch };
 };
 
 export default useFetch;
