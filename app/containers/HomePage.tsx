@@ -4,7 +4,6 @@ import { getSwaps } from '../comit';
 import SwapForm from './SwapForm';
 import SwapList from '../components/SwapList';
 import WalletBalances from './WalletBalances';
-import MakerService from '../services/makerService';
 import { useBitcoinWallet } from '../hooks/useBitcoinWallet';
 import { useEthereumWallet } from '../hooks/useEthereumWallet';
 import { useCnd } from '../hooks/useCnd';
@@ -14,9 +13,6 @@ type Props = {
 };
 
 export default function HomePage(props: Props) {
-  // TODO: refactor to useMakerService
-  const makerService = new MakerService(process.env.MAKER_URL);
-
   const {
     wallet: bitcoinWallet,
     loaded: bitcoinWalletLoaded
@@ -28,22 +24,7 @@ export default function HomePage(props: Props) {
   const { cnd, loaded: cndLoaded } = useCnd();
   const fullyLoaded = cndLoaded && bitcoinWalletLoaded && ethereumWalletLoaded;
 
-  // TODO: refactor below to use hooks, enable switching makers eventually
-  const [maker, setMaker] = useState({});
   const [swaps, setSwaps] = useState([]);
-
-  useEffect(() => {
-    async function fetchMaker() {
-      const {
-        peerId,
-        addressHint,
-        ETHAddress,
-        BTCAddress
-      } = await makerService.getIdentity();
-      setMaker({ peerId, addressHint, ETHAddress, BTCAddress });
-    }
-    fetchMaker();
-  }, []);
 
   useEffect(() => {
     async function fetchSwaps() {
@@ -65,7 +46,7 @@ export default function HomePage(props: Props) {
       <Card>
         <Heading textAlign="center">Swap DAI for BTC</Heading>
 
-        <SwapForm maker={maker} onSwapSent={onSwapSent} />
+        <SwapForm onSwapSent={onSwapSent} />
       </Card>
 
       <Box p={1} mt={2}>
