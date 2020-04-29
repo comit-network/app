@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import {
   Box,
   Form,
@@ -7,9 +7,12 @@ import {
   Button,
   Flex,
   Input,
-  Loader
+  Loader,
+  Icon,
+  Text
 } from 'rimble-ui';
 import { buildSwap } from '../comit';
+import MakerService from '../services/makerService';
 import { useEthereumWallet } from '../hooks/useEthereumWallet';
 import { useComitClient } from '../hooks/useComitClient';
 
@@ -20,7 +23,13 @@ type Props = {
 };
 
 export default function SwapForm(props: Props) {
-  const { rate, maker, onSwapSent } = props;
+  const { maker, onSwapSent } = props;
+
+  // TODO: refactor to useMakerService
+  const makerService = new MakerService(process.env.MAKER_URL);
+
+  const [rate, setRate] = useState('Loading...');
+  const [rateFefreshFlag, refreshRate] = useReducer(state => state + 1, 0);
 
   const { wallet: ethereumWallet, loaded: walletLoaded } = useEthereumWallet();
   const { comitClient, loaded: clientLoaded } = useComitClient();
@@ -77,10 +86,17 @@ export default function SwapForm(props: Props) {
     validateForm();
   });
 
+  useEffect(() => {
+    async function fetchRate() {
+      const rates = await makerService.getRates();
+      setRate(rates.dai.btc);
+    }
+    fetchRate();
+  }, [rateFefreshFlag]);
+
   const handleSubmit = async e => {
     // TODO: display submission errors
 
-    e.preventDefault();
     const refundAddress = await ethereumWallet.getAccount();
     const payload = buildSwap(
       maker.peerId,
@@ -108,7 +124,7 @@ export default function SwapForm(props: Props) {
 
   return (
     <Box>
-      <Form onSubmit={handleSubmit} validated={formValidated}>
+      <Form onSubmit={e => e.preventDefault()} validated={formValidated}>
         <Flex mx={-3} flexWrap="wrap">
           <Box width={[1, 1, 1 / 2]} px={3}>
             <Field label="DAI to send" width={1}>
@@ -135,12 +151,16 @@ export default function SwapForm(props: Props) {
           </Box>
         </Flex>
         <Flash my={3} variant="info">
-          Rate: 1 BTC = {(1 / rate).toFixed(4)} DAI
+          <Flex justifyContent="space-between">
+            <Text>Rate: 1 BTC = {(1 / rate).toFixed(4)} DAI</Text>
+            <Icon name="Refresh" onClick={refreshRate} />
+          </Flex>
         </Flash>
         <Button
           style={{ width: '100%' }}
           type="submit"
           disabled={!formValidated || loading}
+          onClick={handleSubmit}
         >
           {loading ? <Loader color="white" /> : null} Start Swap
         </Button>

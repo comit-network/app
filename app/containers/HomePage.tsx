@@ -31,7 +31,6 @@ export default function HomePage(props: Props) {
   // TODO: refactor below to use hooks, enable switching makers eventually
   const [maker, setMaker] = useState({});
   const [swaps, setSwaps] = useState([]);
-  const [rate, setRate] = useState('Loading...');
 
   useEffect(() => {
     async function fetchMaker() {
@@ -54,14 +53,6 @@ export default function HomePage(props: Props) {
     if (fullyLoaded) fetchSwaps();
   }, [cndLoaded, bitcoinWalletLoaded, ethereumWalletLoaded]);
 
-  useEffect(() => {
-    async function fetchRate() {
-      const rates = await makerService.getRates();
-      setRate(rates.dai.btc);
-    }
-    fetchRate();
-  }); // TODO: useInterval instead?
-
   const onSwapSent = swapId => {
     // Redirect to swap details page
     props.history.push(`/swaps/${swapId}`);
@@ -74,7 +65,7 @@ export default function HomePage(props: Props) {
       <Card>
         <Heading textAlign="center">Swap DAI for BTC</Heading>
 
-        <SwapForm rate={rate} maker={maker} onSwapSent={onSwapSent} />
+        <SwapForm maker={maker} onSwapSent={onSwapSent} />
       </Card>
 
       <Box p={1} mt={2}>
