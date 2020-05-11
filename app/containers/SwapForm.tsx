@@ -79,6 +79,8 @@ export default function SwapForm(props: Props) {
     const nonZeroAmounts = BTCAmount > 0 && DAIAmount > 0;
     const isValidBTCDecimals = countDecimals(BTCAmount) <= BTC_DECIMALS;
 
+    // TODO: validate DAI Amount against DAI wallet balance
+
     if (nonZeroAmounts && isValidBTCDecimals) {
       setFormValidated(true);
     } else {
@@ -89,7 +91,7 @@ export default function SwapForm(props: Props) {
 
   useEffect(() => {
     validateForm();
-  });
+  }, [BTCAmount, DAIAmount]);
 
   useEffect(() => {
     async function recalculate() {

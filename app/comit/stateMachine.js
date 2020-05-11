@@ -4,34 +4,28 @@ async function parseStatus(swap) {
 
   const MAKER_ACCEPTED =
     state.communication.status === 'ACCEPTED' &&
-    state.alpha_ledger.status === 'NOT_DEPLOYED' &&
-    state.beta_ledger.status === 'NOT_DEPLOYED';
+    state.alpha_ledger.status === 'NOT_DEPLOYED';
   if (MAKER_ACCEPTED) {
     return 'MAKER_ACCEPTED';
   }
 
-  const TAKER_LEDGER_DEPLOYED =
-    state.alpha_ledger.status === 'DEPLOYED' &&
-    state.beta_ledger.status === 'NOT_DEPLOYED';
+  const TAKER_LEDGER_DEPLOYED = state.alpha_ledger.status === 'DEPLOYED';
   if (TAKER_LEDGER_DEPLOYED) {
     return 'TAKER_LEDGER_DEPLOYED';
   }
 
-  const MAKER_LEDGER_FUNDED =
-    state.alpha_ledger.status === 'FUNDED' &&
-    state.beta_ledger.status === 'FUNDED';
+  // const TAKER_LEDGER_FUNDED =
+  //   state.alpha_ledger.status === 'FUNDED'
+  // if (TAKER_LEDGER_FUNDED) {
+  //   return 'TAKER_LEDGER_FUNDED';
+  // }
+  // TODO: Refund is possible here
+
+  const MAKER_LEDGER_FUNDED = state.beta_ledger.status === 'FUNDED';
   if (MAKER_LEDGER_FUNDED) {
     return 'MAKER_LEDGER_FUNDED';
   }
 
-  const MAKER_REDEEMED =
-    state.alpha_ledger.status === 'REDEEMED' &&
-    state.beta_ledger.status === 'REDEEMED';
-  if (MAKER_REDEEMED) {
-    return 'MAKER_REDEEMED';
-  }
-
-  // TODO: handle additional statuses and edge cases
   return 'DONE';
 }
 
@@ -65,12 +59,11 @@ export default class TakerStateMachine {
         await this.swap.fund(params);
       }, // results in TAKER_LEDGER_FUNDED
       MAKER_LEDGER_FUNDED: async params => {
+        // TODO: swap.refund is also possible here
+        // Note refund is possible when alpha ledger is Funded but not Redeemed
         console.log('running swap.redeem');
         await this.swap.redeem(params);
       }, // results in TAKER_LEDGER_REDEEMED
-      MAKER_REDEEMED: async () => {
-        return true; // noop
-      },
       DONE: async () => {
         return true; // noop
       } // Let user know that swap is done
