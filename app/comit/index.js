@@ -73,6 +73,8 @@ export function buildSwap(
       quantity: toSatoshi(btcAmount).toString()
     },
     alpha_ledger_refund_identity: takerRefundAddress,
+    // This field below is only used for the reverse, where beta_ledger is Ethereum
+    // beta_ledger_redeem_identity: takerRefundAddress
     alpha_expiry: moment().unix() + 7200,
     beta_expiry: moment().unix() + 3600,
     peer: {
