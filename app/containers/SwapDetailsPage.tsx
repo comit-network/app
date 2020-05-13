@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Card, Box, Text, Heading, Button, Flex } from 'rimble-ui';
+import { Card, Box, Text, Heading, Button, Flex, Loader } from 'rimble-ui';
 import { toBitcoin } from 'satoshi-bitcoin-ts';
 import routes from '../constants/routes.json';
 import { fetchPropertiesById, TakerStateMachine } from '../comit';
@@ -14,6 +14,8 @@ export default function SwapDetailsPage() {
   const { comitClient, loaded: clientLoaded } = useComitClient();
 
   const [swap, setSwap] = useState();
+  const [nextAction, setNextAction] = useState(false);
+  const [actionInProgress, setActionInProgress] = useState(false);
 
   useEffect(() => {
     async function fetchSwap(swapId) {
@@ -23,29 +25,42 @@ export default function SwapDetailsPage() {
     if (clientLoaded) fetchSwap(id);
   }, [clientLoaded]);
 
-  // TODO: minimize use of find, use retrieve once instead and fetchDetails() after
   useInterval(() => {
     async function pollSwap(swapId) {
       const swp = await comitClient.retrieveSwapById(swapId);
       const sm = new TakerStateMachine(swp);
-      try {
-        await sm.next();
-      } catch (error) {
-        // TODO: display error to user
-        console.log(error);
-      }
+
+      const nextActionName = await sm.getNextActionName();
+      setNextAction(nextActionName);
+
       const properties = await fetchPropertiesById(comitClient, swapId);
       setSwap(properties);
     }
 
-    // TODO: debounce to one outgoing request at a time
-    // with a expired/resend state flag
-
     const swapNotDone =
       _.get(swap, 'status') === 'NEW' ||
       _.get(swap, 'status') === 'IN_PROGRESS';
-    if (swapNotDone && clientLoaded) pollSwap(id);
+    if (swapNotDone && clientLoaded && !actionInProgress) pollSwap(id);
   }, process.env.POLL_INTERVAL); // Poll every 5 seconds
+
+  const handleAction = async e => {
+    e.preventDefault();
+
+    console.log('handle action');
+    const swp = await comitClient.retrieveSwapById(id);
+    const sm = new TakerStateMachine(swp);
+
+    setActionInProgress(true);
+    try {
+      await sm.next();
+    } catch (error) {
+      // TODO: display error to user
+      console.log(error);
+    }
+    setActionInProgress(false);
+  };
+
+  const noActionsAvailable = actionInProgress || nextAction === 'WAIT';
 
   return (
     <Box>
@@ -65,7 +80,11 @@ export default function SwapDetailsPage() {
           <Box bg="primary" px={3} py={2}>
             <Text color="white">Swap {_.get(swap, 'status')}</Text>
           </Box>
-          <SwapProgress status={_.get(swap, 'status')} />
+          <SwapProgress
+            status={_.get(swap, 'status')}
+            nextAction={nextAction}
+            actionInProgress={actionInProgress}
+          />
           <Flex
             justifyContent="space-between"
             bg="near-white"
@@ -167,6 +186,18 @@ export default function SwapDetailsPage() {
               {_.get(swap, 'state.communication.status')}
             </Text>
           </Flex>
+
+          {nextAction ? (
+            <Button onClick={handleAction} disabled={noActionsAvailable}>
+              {actionInProgress ? (
+                <Text>
+                  <Loader color="white" /> Running {nextAction} transaction
+                </Text>
+              ) : (
+                nextAction
+              )}
+            </Button>
+          ) : null}
         </Flex>
       </Card>
 

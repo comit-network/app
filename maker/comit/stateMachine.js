@@ -15,13 +15,6 @@ async function parseStatus(swap) {
     return 'TAKER_LEDGER_FUNDED';
   }
 
-  // const MAKER_LEDGER_FUNDED =
-  //   state.beta_ledger.status === 'FUNDED';
-  // if (MAKER_LEDGER_FUNDED) {
-  //   return 'MAKER_LEDGER_FUNDED';
-  // }
-  // TODO: Refund is possible here
-
   const TAKER_REDEEMED =
     state.alpha_ledger.status === 'FUNDED' &&
     state.beta_ledger.status === 'REDEEMED';
@@ -30,6 +23,19 @@ async function parseStatus(swap) {
   }
 
   return 'DONE';
+}
+
+async function canRefund(swap) {
+  const { properties } = await swap.fetchDetails();
+  const { state } = properties;
+
+  const MAKER_LEDGER_FUNDED =
+    state.beta_ledger.status === 'FUNDED';
+  if (MAKER_LEDGER_FUNDED) {
+    return true;
+  }
+
+  return false;
 }
 
 class MakerStateMachine {
@@ -43,6 +49,14 @@ class MakerStateMachine {
   async getStatus() {
     const status = await parseStatus(this.swap);
     return status;
+  }
+
+  /**
+   * Returns boolean, true if the refund action is available.
+   */
+  async canRefund() {
+    const answer = await canRefund(this.swap);
+    return answer;
   }
 
   /**
