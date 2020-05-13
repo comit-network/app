@@ -29,11 +29,7 @@ const loader = loadingText => (
 
 /* eslint-disable react/jsx-no-undef */
 export default function SwapProgress(props: Props) {
-  const { status, nextAction, actionInProgress } = props;
-
-  console.log('SwapProgress');
-  console.log(nextAction);
-  console.log(nextAction === 'WAIT');
+  const { status, nextAction, sendingAction } = props;
 
   if (status === 'SWAPPED') {
     return null;
@@ -43,11 +39,11 @@ export default function SwapProgress(props: Props) {
     return loader('Waiting for Maker...');
   }
 
-  if (actionInProgress) {
+  if (sendingAction) {
     return loader(`Performing ${nextAction} transaction...`);
   }
 
-  if (nextAction && !actionInProgress) {
+  if (nextAction && !sendingAction) {
     return null;
   }
 
