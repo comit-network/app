@@ -1,3 +1,5 @@
+const TRY_PARAMS = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
+
 async function parseStatus(swap) {
   const { properties } = await swap.fetchDetails();
   const { status, state } = properties;
@@ -60,6 +62,22 @@ export default class TakerStateMachine {
     return answer;
   }
 
+  async refund() {
+    const allowed = await canRefund(this.swap);
+    if (allowed) {
+      try {
+        console.log('running swap.refund');
+        await this.swap.refund(TRY_PARAMS);
+      } catch (error) {
+        console.error('refund failed');
+        console.error(error);
+      }
+      console.log('ran');
+    }
+
+    return false;
+  }
+
   /**
    * Returns the next available swap Action name
    */
@@ -107,7 +125,6 @@ export default class TakerStateMachine {
     };
 
     console.log('Executing next step...');
-    const TRY_PARAMS = { maxTimeoutSecs: 30, tryIntervalSecs: 1 };
     await TAKER_SWAP_STATE_MACHINE[status](TRY_PARAMS);
     console.log('Next step executed');
   }

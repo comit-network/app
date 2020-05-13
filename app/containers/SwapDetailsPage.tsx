@@ -17,6 +17,7 @@ export default function SwapDetailsPage() {
   const [nextAction, setNextAction] = useState(false);
   const [sendingAction, setSendingAction] = useState(false);
   const [pendingAction, setPendingAction] = useState();
+  const [isRefundable, setIsRefundable] = useState();
 
   const pollSwap = async swapId => {
     const swp = await comitClient.retrieveSwapById(swapId);
@@ -24,6 +25,9 @@ export default function SwapDetailsPage() {
 
     const nextActionName = await sm.getNextActionName();
     setNextAction(nextActionName);
+
+    const canRefund = await sm.canRefund();
+    setIsRefundable(canRefund);
 
     const properties = await fetchPropertiesById(comitClient, swapId);
     setSwap(properties);
@@ -51,6 +55,24 @@ export default function SwapDetailsPage() {
       setPendingAction(false);
     }
   }, process.env.POLL_INTERVAL); // Poll every 5 seconds
+
+  const handleRefund = async e => {
+    e.preventDefault();
+
+    console.log('handle refund');
+    const swp = await comitClient.retrieveSwapById(id);
+    const sm = new TakerStateMachine(swp);
+
+    setSendingAction(true);
+    try {
+      await sm.refund();
+    } catch (error) {
+      // TODO: display error to user
+      console.log(error);
+    }
+    setSendingAction(false);
+    setPendingAction('REFUND');
+  };
 
   const handleAction = async e => {
     e.preventDefault();
@@ -209,6 +231,18 @@ export default function SwapDetailsPage() {
                 nextAction
               )}
             </Button>
+          ) : null}
+
+          {isRefundable ? (
+            <Button.Outline onClick={handleRefund}>
+              {sendingAction || pendingAction ? (
+                <Text>
+                  <Loader color="white" />
+                </Text>
+              ) : (
+                'Refund'
+              )}
+            </Button.Outline>
           ) : null}
         </Flex>
       </Card>
