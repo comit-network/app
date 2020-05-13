@@ -1,3 +1,5 @@
+const TRY_PARAMS = { maxTimeoutSecs: 10, tryIntervalSecs: 1 };
+
 async function parseStatus(swap) {
   const { properties } = await swap.fetchDetails();
   const { state } = properties;
@@ -55,8 +57,23 @@ class MakerStateMachine {
    * Returns boolean, true if the refund action is available.
    */
   async canRefund() {
-    const answer = await canRefund(this.swap);
-    return answer;
+    const allowed = await canRefund(this.swap);
+    return allowed;
+  }
+
+  async refund() {
+    const allowed = await canRefund(this.swap);
+    if (allowed) {
+      try {
+        console.log('running swap.refund');
+        await this.swap.refund(TRY_PARAMS);
+      } catch(error) {
+        console.error('refund failed');
+        console.error(error);
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -84,10 +101,8 @@ class MakerStateMachine {
     }
 
     // 2. Execute next step
-    const tryParams = { maxTimeoutSecs: 10, tryIntervalSecs: 1 }; // TODO: HARDCODED
-
     try {
-      await MAKER_SWAP_STATE_MACHINE[status](tryParams);
+      await MAKER_SWAP_STATE_MACHINE[status](TRY_PARAMS);
     } catch(error) {
       console.log('Error with next()');
       console.error(error);
