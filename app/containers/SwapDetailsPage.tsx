@@ -15,7 +15,19 @@ export default function SwapDetailsPage() {
 
   const [swap, setSwap] = useState();
   const [nextAction, setNextAction] = useState(false);
-  const [actionInProgress, setActionInProgress] = useState(false);
+  const [sendingAction, setSendingAction] = useState(false);
+  const [pendingAction, setPendingAction] = useState();
+
+  const pollSwap = async swapId => {
+    const swp = await comitClient.retrieveSwapById(swapId);
+    const sm = new TakerStateMachine(swp);
+
+    const nextActionName = await sm.getNextActionName();
+    setNextAction(nextActionName);
+
+    const properties = await fetchPropertiesById(comitClient, swapId);
+    setSwap(properties);
+  };
 
   useEffect(() => {
     async function fetchSwap(swapId) {
@@ -26,21 +38,18 @@ export default function SwapDetailsPage() {
   }, [clientLoaded]);
 
   useInterval(() => {
-    async function pollSwap(swapId) {
-      const swp = await comitClient.retrieveSwapById(swapId);
-      const sm = new TakerStateMachine(swp);
-
-      const nextActionName = await sm.getNextActionName();
-      setNextAction(nextActionName);
-
-      const properties = await fetchPropertiesById(comitClient, swapId);
-      setSwap(properties);
-    }
-
     const swapNotDone =
       _.get(swap, 'status') === 'NEW' ||
       _.get(swap, 'status') === 'IN_PROGRESS';
-    if (swapNotDone && clientLoaded && !actionInProgress) pollSwap(id);
+    if (swapNotDone && clientLoaded && !sendingAction) {
+      pollSwap(id);
+
+      // TODO: need to check that the last pending action has been confirmed
+      // pendingAction
+      // TODO: need mapping to check what tx fields to check in swap before the below code is run
+      // { fund: alpha_ledger.fund_tx !=== null }
+      setPendingAction(false);
+    }
   }, process.env.POLL_INTERVAL); // Poll every 5 seconds
 
   const handleAction = async e => {
@@ -50,17 +59,20 @@ export default function SwapDetailsPage() {
     const swp = await comitClient.retrieveSwapById(id);
     const sm = new TakerStateMachine(swp);
 
-    setActionInProgress(true);
+    const nextActionName = await sm.getNextActionName();
+
+    setSendingAction(true);
     try {
       await sm.next();
     } catch (error) {
       // TODO: display error to user
       console.log(error);
     }
-    setActionInProgress(false);
+    setSendingAction(false);
+    setPendingAction(nextActionName);
   };
 
-  const noActionsAvailable = actionInProgress || nextAction === 'WAIT';
+  const noActionsAvailable = sendingAction || nextAction === 'WAIT';
 
   return (
     <Box>
@@ -83,7 +95,7 @@ export default function SwapDetailsPage() {
           <SwapProgress
             status={_.get(swap, 'status')}
             nextAction={nextAction}
-            actionInProgress={actionInProgress}
+            sendingAction={sendingAction}
           />
           <Flex
             justifyContent="space-between"
@@ -187,11 +199,11 @@ export default function SwapDetailsPage() {
             </Text>
           </Flex>
 
-          {nextAction ? (
+          {nextAction && nextAction !== 'WAIT' ? (
             <Button onClick={handleAction} disabled={noActionsAvailable}>
-              {actionInProgress ? (
+              {sendingAction || pendingAction ? (
                 <Text>
-                  <Loader color="white" /> Running {nextAction} transaction
+                  <Loader color="white" />
                 </Text>
               ) : (
                 nextAction
