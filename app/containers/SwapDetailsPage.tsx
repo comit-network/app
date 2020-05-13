@@ -48,10 +48,10 @@ export default function SwapDetailsPage() {
     if (swapNotDone && clientLoaded && !sendingAction) {
       pollSwap(id);
 
-      // TODO: need to check that the last pending action has been confirmed
-      // pendingAction
+      // NOTE: The SDK may need a way to track any pending transactions
+      // TODO: need to check that the last submitted pendingAction transaction has been confirmed
       // TODO: need mapping to check what tx fields to check in swap before the below code is run
-      // { fund: alpha_ledger.fund_tx !=== null }
+      // { fund: alpha_ledger.fund_tx !== null }
       setPendingAction(false);
     }
   }, process.env.POLL_INTERVAL); // Poll every 5 seconds
