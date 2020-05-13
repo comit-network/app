@@ -1,6 +1,6 @@
 async function parseStatus(swap) {
   const { properties } = await swap.fetchDetails();
-  const { state } = properties;
+  const { status, state } = properties;
 
   const MAKER_ACCEPTED =
     state.communication.status === 'ACCEPTED' &&
@@ -14,19 +14,29 @@ async function parseStatus(swap) {
     return 'TAKER_LEDGER_DEPLOYED';
   }
 
-  // const TAKER_LEDGER_FUNDED =
-  //   state.alpha_ledger.status === 'FUNDED'
-  // if (TAKER_LEDGER_FUNDED) {
-  //   return 'TAKER_LEDGER_FUNDED';
-  // }
-  // TODO: Refund is possible here
-
   const MAKER_LEDGER_FUNDED = state.beta_ledger.status === 'FUNDED';
   if (MAKER_LEDGER_FUNDED) {
     return 'MAKER_LEDGER_FUNDED';
   }
 
-  return 'DONE';
+  const SWAPPED = status === 'SWAPPED';
+  if (SWAPPED) {
+    return 'SWAPPED';
+  } // TODO: use to display completed status
+
+  return 'WAITING_FOR_MAKER';
+}
+
+async function canRefund(swap) {
+  const { properties } = await swap.fetchDetails();
+  const { state } = properties;
+
+  const TAKER_LEDGER_FUNDED = state.alpha_ledger.status === 'FUNDED';
+  if (TAKER_LEDGER_FUNDED) {
+    return true;
+  }
+
+  return false;
 }
 
 export default class TakerStateMachine {
@@ -40,6 +50,30 @@ export default class TakerStateMachine {
   async getStatus() {
     const status = await parseStatus(this.swap);
     return status;
+  }
+
+  /**
+   * Returns boolean, true if the refund action is available.
+   */
+  async canRefund() {
+    const answer = await canRefund(this.swap);
+    return answer;
+  }
+
+  /**
+   * Returns the next available swap Action name
+   */
+  async getNextActionName() {
+    const status = await parseStatus(this.swap);
+    const NEXT_ACTION_NAME = {
+      MAKER_ACCEPTED: 'DEPLOY',
+      TAKER_LEDGER_DEPLOYED: 'FUND',
+      MAKER_LEDGER_FUNDED: 'REDEEM',
+      WAITING_FOR_MAKER: 'WAIT',
+      SWAPPED: false
+    };
+
+    return NEXT_ACTION_NAME[status];
   }
 
   /**
@@ -64,7 +98,10 @@ export default class TakerStateMachine {
         console.log('running swap.redeem');
         await this.swap.redeem(params);
       }, // results in TAKER_LEDGER_REDEEMED
-      DONE: async () => {
+      WAITING_FOR_MAKER: async () => {
+        return true; // noop
+      },
+      SWAPPED: async () => {
         return true; // noop
       } // Let user know that swap is done
     };
