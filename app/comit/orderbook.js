@@ -12,7 +12,7 @@ export default class Orderbook {
       entities: [
         {
           id: '',
-          makerId: '',
+          makerId: '123',
           side: 'buy',
           makerAssetQuantity: 1,
           takerAssetQuantity: 2,
@@ -26,7 +26,7 @@ export default class Orderbook {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async addOrder(_order_) {
+  async placeOrder(_order_) {
     return 'TODO';
   }
 

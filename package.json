@@ -282,7 +282,7 @@
     "redux-thunk": "^2.3.0",
     "rimble-ui": "^0.13.1",
     "source-map-support": "^0.5.16",
-    "styled-components": "^5.0.1"
+    "styled-components": "4.4.1"
   },
   "devEngines": {
     "node": ">=7.x",

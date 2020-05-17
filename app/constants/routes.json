@@ -1,4 +1,5 @@
 {
   "HOME": "/",
-  "SWAPS": "/swaps"
+  "SWAPS": "/swaps",
+  "ORDERS": "/orders"
 }

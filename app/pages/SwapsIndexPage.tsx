@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Card, Heading } from 'rimble-ui';
+import { Box, Card, Heading, Button } from 'rimble-ui';
+import { Link } from 'react-router-dom';
 import { getSwaps } from '../comit';
-import SwapForm from './SwapForm';
+import SwapForm from '../components/SwapForm';
 import SwapList from '../components/SwapList';
-import WalletBalances from './WalletBalances';
+import WalletBalances from '../components/WalletBalances';
 import { useBitcoinWallet } from '../hooks/useBitcoinWallet';
 import { useEthereumWallet } from '../hooks/useEthereumWallet';
 import { useCnd } from '../hooks/useCnd';
@@ -12,7 +13,7 @@ type Props = {
   history: History;
 };
 
-export default function HomePage(props: Props) {
+export default function SwapsIndexPage(props: Props) {
   const {
     wallet: bitcoinWallet,
     loaded: bitcoinWalletLoaded
@@ -52,6 +53,14 @@ export default function HomePage(props: Props) {
       <Box p={1} mt={2}>
         <SwapList swaps={swaps} />
       </Box>
+
+      <Link to="/orders">
+        <Button.Outline>Start</Button.Outline>
+      </Link>
+
+      <Link to="/abc">
+        <Button.Outline>ABC</Button.Outline>
+      </Link>
     </Box>
   );
 }
