@@ -20,7 +20,7 @@
     "comit-sdk": "^0.14.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
-    "react-select": "^3.1.0",
-    "satoshi-bitcoin-ts": "^0.2.4"
+    "satoshi-bitcoin-ts": "^0.2.4",
+    "styled-components": "4.4.1"
   }
 }
