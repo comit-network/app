@@ -280,7 +280,8 @@
     "react-router-dom": "^5.1.2",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "rimble-ui": "^0.13.1",
+    "rimble-ui": "^0.14.0",
+    "styled-components": "4.4.1",
     "source-map-support": "^0.5.16"
   },
   "devEngines": {
