@@ -8,11 +8,15 @@ import {
   Heading,
   Text,
   Pill,
-  Flash,
-  Button,
+  Slider,
   Icon,
-  Modal
+  Button,
+  Tooltip,
+  Blockie,
+  Modal,
+  Loader
 } from 'rimble-ui';
+import { Star, StarHalf } from '@rimble/icons';
 import styled from 'styled-components';
 
 type Props = {
@@ -45,7 +49,20 @@ export default function OrdersPage() {
 
   return (
     <Box>
-      <Heading textAlign="center">Available Orders</Heading>
+      <Flex justifyContent="space-between">
+        <Heading textAlign="center">Available Orders</Heading>
+
+        <Box mr={[0, 3]} mb={[3, 0]}>
+          <Loader style={{ display: 'inline-block' }} mr={2} size="0.7em" />
+          <Text style={{ display: 'inline-block' }} color="gray">
+            Syncing...
+          </Text>
+        </Box>
+
+        <Button.Outline>
+          <Icon name="Notifications" />{' '}
+        </Button.Outline>
+      </Flex>
       <br />
       <br />
 
@@ -61,7 +78,10 @@ export default function OrdersPage() {
             <Field label="Sort by">
               <Select
                 required
-                options={[{ value: 'rate-asc', label: 'Best Rate' }]}
+                options={[
+                  { value: 'rate-asc', label: 'Best Rate' },
+                  { value: 'date-asc', label: 'Expiring Soon' }
+                ]}
               />
             </Field>
 
@@ -84,11 +104,32 @@ export default function OrdersPage() {
                 width: '100%'
               }}
             >
+              <Panel
+                style={{
+                  background: 'none',
+                  border: '0',
+                  width: '100px',
+                  padding: '10px',
+                  paddingLeft: '0'
+                }}
+              >
+                <Blockie
+                  opts={{
+                    seed: 'foo',
+                    color: '#dfe',
+                    bgcolor: '#a71',
+                    size: 15,
+                    scale: 4,
+                    spotcolor: '#000'
+                  }}
+                />
+              </Panel>
+
               <Panel my={3} variant="info">
                 <Text mb="-5px" fontSize="0.8em" textAlign="center">
                   BTC
                 </Text>
-                <Text bold fontSize="1.6em" textAlign="center">
+                <Text bold fontSize="1.4em" textAlign="center">
                   0.21345
                 </Text>
               </Panel>
@@ -104,7 +145,7 @@ export default function OrdersPage() {
                 <Text mb="-5px" fontSize="0.8em" textAlign="center">
                   DAI
                 </Text>
-                <Text bold fontSize="1.6em" textAlign="center">
+                <Text bold fontSize="1.4em" textAlign="center">
                   500
                 </Text>
               </Panel>
@@ -119,9 +160,9 @@ export default function OrdersPage() {
                 }}
               >
                 <Button.Outline onClick={openModal} mr={2}>
-                  Take
+                  Details
                 </Button.Outline>
-                <Pill color="green">30 minutes left</Pill>
+                <Pill color="green">5 minutes left</Pill>
               </Panel>
             </Card>
           </Box>
@@ -143,10 +184,43 @@ export default function OrdersPage() {
           />
 
           <Box p={4} mb={3}>
-            <Heading.h3>Take Order</Heading.h3>
+            <Heading.h3>Fill Order</Heading.h3>
 
-            <Text italic>Rate: 1BTC = 5982.12348 DAI</Text>
-            <Flex>
+            <Card mt={3}>
+              <Tooltip message="Maker ID: 12345678" placement="top">
+                <Flex
+                  style={{
+                    justifyContent: 'center',
+                    marginBottom: '10px'
+                  }}
+                >
+                  <Blockie
+                    opts={{
+                      seed: 'foo',
+                      color: '#dfe',
+                      bgcolor: '#a71',
+                      size: 15,
+                      scale: 3,
+                      spotcolor: '#000'
+                    }}
+                  />
+                </Flex>
+              </Tooltip>
+              <Text textAlign="center" color="orange">
+                <Star />
+                <Star />
+                <Star />
+                <StarHalf />
+              </Text>
+              <Text textAlign="center" color="green" fontWeight="bold">
+                In Good Standing
+              </Text>
+              <Flex mt={3} justifyContent="center">
+                <Button icon="NotificationsActive">Subscribed</Button>
+              </Flex>
+            </Card>
+
+            <Flex justifyContent="space-evenly">
               <Panel my={3} variant="info">
                 <Text textAlign="center">You will receive</Text>
 
@@ -177,9 +251,11 @@ export default function OrdersPage() {
               </Panel>
             </Flex>
 
-            <Text>This rate will expire in 5 minutes 12 seconds.</Text>
+            <Text>
+              Rate: <strong>1BTC = 5982.12348 DAI</strong>
+            </Text>
 
-            <Text>Are you sure you want to take this order?</Text>
+            <Text>This rate will expire in 5 minutes 12 seconds.</Text>
           </Box>
 
           <Flex
@@ -187,10 +263,12 @@ export default function OrdersPage() {
             py={3}
             borderTop={1}
             borderColor="#E8E8E8"
-            justifyContent="flex-end"
+            flexDirection="column"
           >
-            <Button.Outline onClick={closeModal}>Cancel</Button.Outline>
-            <Button ml={3}>Confirm</Button>
+            <Flex justifyContent="flex-end">
+              <Button.Outline onClick={closeModal}>Cancel</Button.Outline>
+              <Button ml={3}>Fill Order</Button>
+            </Flex>
           </Flex>
         </Card>
       </Modal>
