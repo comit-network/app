@@ -8,7 +8,7 @@ import {
   Heading,
   Text,
   Pill,
-  Slider,
+  Radio,
   Icon,
   Button,
   Tooltip,
@@ -16,22 +16,35 @@ import {
   Modal,
   Loader
 } from 'rimble-ui';
-import { Star, StarHalf } from '@rimble/icons';
 import styled from 'styled-components';
 
 type Props = {
   history: History;
 };
 
+const Order = styled(Card)`
+  display: flex;
+  width: 800px;
+  padding: 0px;
+  border: 1px solid none;
+  border-radius: 4px;
+
+  &:hover {
+    border: 1px solid blue;
+    cursor: pointer;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  }
+`;
+
 const Panel = styled.div`
-  width: 150px;
+  width: 300px;
   color: #206790;
   background-color: #eaf6fd;
   border: 1px solid #36adf1;
   border-radius: 4px;
-  margin: 16px 0;
-  margin-right: 10px;
-  padding: 16px;
+  margin: 10px;
+  margin-right: 0px;
+  padding: 5px 10px;
 `;
 
 export default function OrdersPage() {
@@ -85,55 +98,17 @@ export default function OrdersPage() {
               />
             </Field>
 
-            <Field label="Trade">
-              <Select required options={[{ value: 'dai', label: 'DAI' }]} />
-            </Field>
-
-            <Field label="Receive">
-              <Select required options={[{ value: 'btc', label: 'BTC' }]} />
+            <Field label="Filter by trading pair">
+              <Radio required checked label="All" my={2} />
+              <Radio label="BTC to DAI" my={2} />
+              <Radio label="DAI to BTC" my={2} />
             </Field>
           </Box>
         </Flex>
 
         <Flex flex="3">
           <Box width="100%">
-            <Card
-              style={{
-                display: 'flex',
-                padding: '0px 20px',
-                width: '100%'
-              }}
-            >
-              <Panel
-                style={{
-                  background: 'none',
-                  border: '0',
-                  width: '100px',
-                  padding: '10px',
-                  paddingLeft: '0'
-                }}
-              >
-                <Blockie
-                  opts={{
-                    seed: 'foo',
-                    color: '#dfe',
-                    bgcolor: '#a71',
-                    size: 15,
-                    scale: 4,
-                    spotcolor: '#000'
-                  }}
-                />
-              </Panel>
-
-              <Panel my={3} variant="info">
-                <Text mb="-5px" fontSize="0.8em" textAlign="center">
-                  BTC
-                </Text>
-                <Text bold fontSize="1.4em" textAlign="center">
-                  0.21345
-                </Text>
-              </Panel>
-
+            <Order onClick={openModal}>
               <Panel
                 my={3}
                 style={{
@@ -142,11 +117,24 @@ export default function OrdersPage() {
                   borderColor: '#FD9D28'
                 }}
               >
-                <Text mb="-5px" fontSize="0.8em" textAlign="center">
-                  DAI
+                <Text bold fontSize="1.2em">
+                  <small style={{ fontSize: '70%' }}>DAI</small> 500
                 </Text>
-                <Text bold fontSize="1.4em" textAlign="center">
-                  500
+              </Panel>
+
+              <Box
+                style={{
+                  marginTop: '20px',
+                  marginBottom: '-20px',
+                  marginLeft: '10px'
+                }}
+              >
+                <Icon name="KeyboardArrowRight" />
+              </Box>
+
+              <Panel my={3} variant="info">
+                <Text bold fontSize="1.2em">
+                  <small style={{ fontSize: '70%' }}>BTC</small> 0.21345
                 </Text>
               </Panel>
 
@@ -156,15 +144,34 @@ export default function OrdersPage() {
                   background: 'none',
                   width: '100%',
                   marginRight: '0px',
-                  borderStyle: 'dashed'
+                  borderStyle: 'none'
                 }}
               >
-                <Button.Outline onClick={openModal} mr={2}>
-                  Details
-                </Button.Outline>
                 <Pill color="green">5 minutes left</Pill>
               </Panel>
-            </Card>
+
+              <Panel
+                my={2}
+                style={{
+                  background: 'none',
+                  borderStyle: 'none',
+                  width: 'auto',
+                  padding: '4px',
+                  margin: '10px'
+                }}
+              >
+                <Blockie
+                  opts={{
+                    seed: 'foo',
+                    color: '#dfe',
+                    bgcolor: '#a71',
+                    size: 15,
+                    scale: 2,
+                    spotcolor: '#000'
+                  }}
+                />
+              </Panel>
+            </Order>
           </Box>
         </Flex>
       </Flex>
@@ -186,7 +193,7 @@ export default function OrdersPage() {
           <Box p={4} mb={3}>
             <Heading.h3>Fill Order</Heading.h3>
 
-            <Card mt={3}>
+            <Card mt={3} mb={3}>
               <Tooltip message="Maker ID: 12345678" placement="top">
                 <Flex
                   style={{
@@ -206,38 +213,19 @@ export default function OrdersPage() {
                   />
                 </Flex>
               </Tooltip>
-              <Text textAlign="center" color="orange">
-                <Star />
-                <Star />
-                <Star />
-                <StarHalf />
-              </Text>
-              <Text textAlign="center" color="green" fontWeight="bold">
-                In Good Standing
-              </Text>
               <Flex mt={3} justifyContent="center">
                 <Button icon="NotificationsActive">Subscribed</Button>
               </Flex>
             </Card>
 
             <Flex justifyContent="space-evenly">
-              <Panel my={3} variant="info">
-                <Text textAlign="center">You will receive</Text>
-
-                <Text mb="-5px" fontSize="0.8em" textAlign="center">
-                  BTC
-                </Text>
-                <Text bold fontSize="1.6em" textAlign="center">
-                  0.21345
-                </Text>
-              </Panel>
-
               <Panel
                 my={3}
                 style={{
                   color: '#975e18',
                   backgroundColor: '#fef5e9',
-                  borderColor: '#FD9D28'
+                  borderColor: '#FD9D28',
+                  padding: '20px'
                 }}
               >
                 <Text textAlign="center">You will pay</Text>
@@ -245,8 +233,25 @@ export default function OrdersPage() {
                 <Text mb="-5px" fontSize="0.8em" textAlign="center">
                   DAI
                 </Text>
-                <Text bold fontSize="1.6em" textAlign="center">
+                <Text bold fontSize="1.4em" textAlign="center">
                   500
+                </Text>
+              </Panel>
+
+              <Panel
+                my={3}
+                style={{
+                  padding: '20px'
+                }}
+                variant="info"
+              >
+                <Text textAlign="center">You will receive</Text>
+
+                <Text mb="-5px" fontSize="0.8em" textAlign="center">
+                  BTC
+                </Text>
+                <Text bold fontSize="1.4em" textAlign="center">
+                  0.21345
                 </Text>
               </Panel>
             </Flex>
